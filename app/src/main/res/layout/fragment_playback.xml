@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="song"
+            type="com.example.akxplayer.model.Song" />
+
+        <variable
+            name="nextSong"
+            type="com.example.akxplayer.model.Song" />
+
+        <variable
+            name="viewModel"
+            type="com.example.akxplayer.ui.viewmodels.MediaViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background">
+
+        <FrameLayout
+            android:id="@+id/bottom_controls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/view_drag_down"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:alpha="0"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/bottom_controls"
+            app:layout_constraintEnd_toEndOf="@+id/bottom_controls"
+            app:layout_constraintStart_toStartOf="@+id/bottom_controls"
+            app:layout_constraintTop_toTopOf="@+id/bottom_controls">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_arrow_down" />
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:textColor="@color/textColor"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bottom_controls">
+
+            <ImageView
+                android:id="@+id/image_album_art"
+                albumId="@{song.albumId}"
+                error="@{@drawable/ic_headset}"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="16dp"
+                android:adjustViewBounds="true"
+                app:layout_constraintBottom_toTopOf="@id/container_detail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/container_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/seekBar"
+                app:layout_constraintEnd_toEndOf="@id/seekBar"
+                app:layout_constraintStart_toStartOf="@id/seekBar"
+                app:layout_constraintTop_toBottomOf="@+id/image_album_art">
+
+                <ImageView
+                    android:id="@+id/btn_like"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_not_favorite" />
+                <!--                    android:onClick="@{viewModel::addToFavorites}"-->
+
+                <LinearLayout
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_song_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lines="1"
+                        android:text="@{song.title}"
+                        android:textAlignment="center"
+                        android:textColor="@color/textColor"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_song_artist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{song.artist}"
+                        android:textAlignment="center"
+                        android:textColor="@color/textColor" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btn_share"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()-> viewModel.shareSong()}"
+                    android:src="@drawable/ic_send" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:max="@{song.duration}"
+                app:layout_constraintBottom_toTopOf="@+id/container_process"
+                app:layout_constraintEnd_toEndOf="@+id/container_process"
+                app:layout_constraintStart_toStartOf="@+id/container_process" />
+
+            <LinearLayout
+                android:id="@+id/container_process"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                app:layout_constraintBottom_toTopOf="@+id/container_controls"
+                app:layout_constraintEnd_toEndOf="@id/container_controls"
+                app:layout_constraintStart_toStartOf="@+id/container_controls">
+
+                <TextView
+                    android:id="@+id/text_process"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/textColor" />
+
+                <TextView
+                    android:id="@+id/text_limit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@{song.fetchDuration()}"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/textColor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/container_controls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/layout_next"
+                app:layout_constraintEnd_toEndOf="@+id/layout_next"
+                app:layout_constraintStart_toStartOf="@+id/layout_next">
+
+                <ImageView
+                    android:id="@+id/btn_shuffle"
+                    android:layout_width="35dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()->viewModel.setShuffleMode()}"
+                    android:src="@drawable/ic_shuffle" />
+
+                <ImageView
+                    android:id="@+id/btn_previous"
+                    android:layout_width="35dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()-> viewModel.playPreviousSong()}"
+                    android:src="@drawable/ic_previous" />
+
+                <ImageView
+                    android:id="@+id/btn_play"
+                    android:layout_width="60dp"
+                    android:layout_height="75dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()-> viewModel.playOrPauseSong()}"
+                    android:src="@drawable/ic_pause_circle_filled" />
+
+                <ImageView
+                    android:id="@+id/btn_next"
+                    android:layout_width="35dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()-> viewModel.playNextSong()}"
+                    android:src="@drawable/ic_next" />
+
+                <ImageView
+                    android:id="@+id/btn_repeat"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{()->viewModel.setRepeatMode()}"
+                    android:src="@drawable/ic_repeat" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+                <!--                android:onClick="@{()->viewModel.showQueue()}"-->
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:padding="2dp"
+                    android:text="@string/up_next"
+                    android:textColor="@color/textColor" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/image_next_song"
+                        albumId="@{nextSong.albumId}"
+                        error="@{@drawable/ic_headset}"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_headset" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:textColor="@color/textColor">
+
+                        <TextView
+                            android:id="@+id/text_next_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lines="1"
+                            android:text="@{nextSong.title}"
+                            android:textColor="@color/textColor" />
+
+                        <TextView
+                            android:id="@+id/text_next_artist"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{nextSong.artist}"
+                            android:textColor="@color/textColor" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/btn_queue"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:onClick="@{() -> viewModel.showQueue()}"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_queue" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#303030</color>
+    <color name="colorPrimaryDark">#303030</color>
+    <color name="colorAccent">#18931E</color>
+    <color name="background">#D0303030</color>
+    <color name="textColor">#CDC9C9</color>
+    <color name="hint">#A9C5C4C4</color>
+    <color name="splitter">#CDC9C9</color>
+    <color name="toolbarTitle">@color/colorAccent</color>
+    <color name="songBottomControl">@color/colorPrimary</color>
+</resources>
