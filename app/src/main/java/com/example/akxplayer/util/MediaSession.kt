@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.media.MediaPlayer
 import android.provider.MediaStore
+import com.example.akxplayer.constants.PlayingState
 import com.example.akxplayer.constants.Repeat
 import com.example.akxplayer.constants.Shuffle
 import com.example.akxplayer.model.Song
@@ -83,7 +84,7 @@ object MediaSession {
                 onControlsChange.onSongChange(currentPosition)
             }
         } catch (ignore: FileNotFoundException) {
-            onControlsChange.isPlaying(false)
+            onControlsChange.onPlayerStateChanged(PlayingState.STOPPED)
         }
     }
 
@@ -107,15 +108,20 @@ object MediaSession {
         }
     }
 
-    fun pause() {
-        mediaPlayer.pause()
-        onControlsChange.isPlaying(mediaPlayer.isPlaying)
-    }
-
     fun play() {
         mediaPlayer.start()
         initSeekPosition()
-        onControlsChange.isPlaying(mediaPlayer.isPlaying)
+        onControlsChange.onPlayerStateChanged(PlayingState.PLAYING)
+    }
+
+    fun pause() {
+        mediaPlayer.pause()
+        onControlsChange.onPlayerStateChanged(PlayingState.PAUSED)
+    }
+
+    fun stop() {
+        mediaPlayer.stop()
+        onControlsChange.onPlayerStateChanged(PlayingState.STOPPED)
     }
 
     fun playNextSong() {
@@ -168,4 +174,17 @@ object MediaSession {
         Repeat.REPEAT_ALL -> if (currentPosition - 1 == -1) songList.size - 1 else currentPosition - 1
         else -> currentPosition - 1
     }
+
+    fun lowerVolume() {
+        mediaPlayer.setVolume(0.2f, 0.2f)
+    }
+
+    fun higherVolume(){
+        mediaPlayer.setVolume(1f, 1f)
+    }
+
+    fun release() {
+        mediaPlayer.release()
+    }
+
 }

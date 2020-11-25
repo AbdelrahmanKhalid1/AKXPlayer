@@ -1,21 +1,23 @@
 package com.example.akxplayer.ui.viewmodels
 
 import android.app.Application
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.net.Uri
+import android.os.Build
 import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.example.akxplayer.constants.PlayingState
 import com.example.akxplayer.constants.Repeat
 import com.example.akxplayer.constants.Shuffle
 import com.example.akxplayer.model.Song
+import com.example.akxplayer.receiver.NoisyReceiver
 import com.example.akxplayer.repository.*
 import com.example.akxplayer.services.MediaPlayerService
 import com.example.akxplayer.ui.listeners.OnMediaControlsChange
@@ -30,6 +32,7 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
 
     private lateinit var service: MediaPlayerService
     private val audioManager: AudioManager
+    private lateinit var audioFocusRequest: AudioFocusRequest
     private val intent: Intent
     val rootSong = MutableLiveData<Int>()
     val title = MutableLiveData<String>()
@@ -44,11 +47,10 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     init {
         SongRepository.init(application)
         audioManager = application.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        if (MediaSession.queue.isEmpty()){
+        if (MediaSession.queue.isEmpty()) {
             MediaSession.init(application.contentResolver, this)
 //        QueueRepository.init(application)
-        }
-        else {
+        } else {
             MediaSession.init(this)
             rootSong.value = MediaSession.currentPosition
             isPlaying.value = true
@@ -68,17 +70,13 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
         if (MediaSession.isPlaying()) {
             MediaSession.pause()
             service.createNotification()
-            service.stopForeground(false)
-            service.stopSelf()
         } else {
-//            mediaSession.play()
-            ContextCompat.startForegroundService(getApplication(), intent)
+            requestAudioFocus()
         }
     }
 
     fun playNextSong() {
         MediaSession.playNextSong()
-//        service.createNotification()
     }
 
     fun setRepeatMode() {
@@ -121,8 +119,27 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
         rootSong.postValue(position)
     }
 
-    override fun isPlaying(isPlaying: Boolean) {
-        this.isPlaying.postValue(isPlaying)
+    override fun onPlayerStateChanged(playerState: PlayingState) {
+        when (playerState) {
+            PlayingState.PLAYING -> {
+                this.isPlaying.postValue(true)
+                getApplication<Application>().registerReceiver(NoisyReceiver(), IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
+            }
+            PlayingState.PAUSED -> {
+                this.isPlaying.postValue(false)
+//                getApplication<Application>().unregisterReceiver(NoisyReceiver())
+                service.stopForeground(false)
+            }
+            PlayingState.STOPPED -> {
+                this.isPlaying.postValue(false)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    audioManager.abandonAudioFocusRequest(audioFocusRequest)
+                else
+                    audioManager.abandonAudioFocus(service)
+                service.mediaSessionCompat.isActive = false
+                service.stopForeground(true)
+            }
+        }
         service.createNotification()
     }
 
@@ -160,20 +177,39 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
         )
     }
 
-    fun showQueue() { goToQueue.value = true }
+    fun showQueue() {
+        goToQueue.value = true
+    }
+
     fun getCurrentSong(): Song = MediaSession.getCurrentSong()
     fun getNextSong(): Song = MediaSession.getNextSong()
     fun getQueue(): Pair<List<Song>, List<Int>> = Pair(MediaSession.songList, MediaSession.queue)
 
-    private fun requestAudioFocus(){
-        val result = audioManager.requestAudioFocus(
-            null,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        )
-
-        if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-            MediaSession.play()
+    private fun requestAudioFocus():Boolean {
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+                )
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener(service).build()
+            audioManager.requestAudioFocus(audioFocusRequest)
+        } else {
+            audioManager.requestAudioFocus(
+                service,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN
+            )
         }
+
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            MediaSession.play()
+            service.mediaSessionCompat.isActive = true
+            return true
+        }
+        return false
     }
 }

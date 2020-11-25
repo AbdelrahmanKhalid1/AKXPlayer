@@ -30,18 +30,25 @@
             android:name=".ui.activities.SettingsActivity"
             android:parentActivityName=".ui.activities.MainActivity" />
 
-        <service
-            android:name=".services.MediaPlayerService"
-            android:enabled="true" />
-        <receiver
-            android:name=".receiver.CallReceiver"
-            android:enabled="true"
-            android:exported="true">
+        <!--Receiver for bluetooth and headphones controls -->
+        <receiver android:name="androidx.media.session.MediaButtonReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="android." />
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
+<!--        <receiver android:name=".receiver.NoisyReceiver"-->
+<!--            android:enabled="true"/>-->
+
+        <service
+            android:name=".services.MediaPlayerService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTOn"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

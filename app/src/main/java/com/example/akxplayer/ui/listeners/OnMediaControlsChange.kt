@@ -1,7 +1,9 @@
 package com.example.akxplayer.ui.listeners
 
+import com.example.akxplayer.constants.PlayingState
+
 interface OnMediaControlsChange {
     fun onSongChange(position: Int)
     fun onSeekPositionChange(seekPosition: Int)
-    fun isPlaying(isPlaying: Boolean)
+    fun onPlayerStateChanged(playerState: PlayingState)
 }

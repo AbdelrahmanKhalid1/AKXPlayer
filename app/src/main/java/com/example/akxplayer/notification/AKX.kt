@@ -45,12 +45,16 @@ class AKX : Application() {
             .setSmallIcon(R.drawable.ic_headset)
             .setContentTitle(song.title)
             .setContentText(song.artist)
+//            .setContentTitle(mediaSessionCompat.controller.metadata.description.title)
+//            .setContentText(mediaSessionCompat.controller.metadata.description.subtitle)
+//            .setSubText(mediaSessionCompat.controller.metadata.description.description)
             .setLargeIcon(
                 com.example.akxplayer.util.Util.getPic(
                     song.albumId,
                     context.contentResolver
                 )
             )
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(R.drawable.ic_repeat, "like", null)
             .addAction(R.drawable.ic_previous, "previous", null)
             .addAction(
@@ -64,6 +68,8 @@ class AKX : Application() {
                 androidx.media.app.NotificationCompat.MediaStyle()
                     .setShowActionsInCompactView(1, 2, 3)
                     .setMediaSession(mediaSessionCompat.sessionToken)
+                    .setShowCancelButton(true) //for api < lollipop
+//                    .setCancelButtonIntent(MediaStyle)
             )
             .setSubText("Sub Text")
             .setPriority(NotificationCompat.PRIORITY_LOW)
