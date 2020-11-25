@@ -72,17 +72,18 @@ data class Song(
                 cursor.getString(cursor.getColumnIndex(ARTIST))
             )
         }
-        fun buildMediaDescription(song: Song, contentResolver: ContentResolver): MediaDescriptionCompat {
-            val extras = Bundle()
+        fun buildMediaMetaData(song: Song, contentResolver: ContentResolver): MediaMetadataCompat {
+//            val extras = Bundle()
             val bitmap = Util.getPic(song.albumId, contentResolver)
-            extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-            extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, bitmap)
-            return MediaDescriptionCompat.Builder()
-                .setMediaId(song.id.toString())
-                .setIconBitmap(bitmap)
-                .setTitle(song.title)
-                .setDescription(song.artist)
-                .setExtras(extras)
+//            extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+//            extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, bitmap)
+            return MediaMetadataCompat.Builder()
+
+//                .setMediaId(song.id.toString())
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.artist)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, song.duration.toLong())
                 .build()
         }
     }

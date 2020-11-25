@@ -8,6 +8,7 @@ import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -24,6 +25,7 @@ import com.example.akxplayer.ui.listeners.OnMediaControlsChange
 import com.example.akxplayer.util.MediaSession
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.ArrayList
 
 private const val TAG = "MediaViewModel"
 
@@ -31,8 +33,6 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     OnMediaControlsChange {
 
     private lateinit var service: MediaPlayerService
-    private val audioManager: AudioManager
-    private lateinit var audioFocusRequest: AudioFocusRequest
     private val intent: Intent
     val rootSong = MutableLiveData<Int>()
     val title = MutableLiveData<String>()
@@ -46,7 +46,6 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
 
     init {
         SongRepository.init(application)
-        audioManager = application.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         if (MediaSession.queue.isEmpty()) {
             MediaSession.init(application.contentResolver, this)
 //        QueueRepository.init(application)
@@ -71,7 +70,7 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
             MediaSession.pause()
             service.createNotification()
         } else {
-            requestAudioFocus()
+//            requestAudioFocus()
         }
     }
 
@@ -103,6 +102,8 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
         Completable.create {
             this.title.postValue(title)
             MediaSession.setMediaSession(position, songList)
+            intent.putExtra("position", position)
+            intent.putParcelableArrayListExtra("queue", songList as ArrayList<out Parcelable>)
 //            mediaSession.play()
             ContextCompat.startForegroundService(getApplication(), intent)
             it.onComplete()
@@ -115,7 +116,7 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     }.subscribeOn(Schedulers.computation())
 
     override fun onSongChange(position: Int) {
-        requestAudioFocus()
+//        requestAudioFocus()
         rootSong.postValue(position)
     }
 
@@ -132,11 +133,11 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
             }
             PlayingState.STOPPED -> {
                 this.isPlaying.postValue(false)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    audioManager.abandonAudioFocusRequest(audioFocusRequest)
-                else
-                    audioManager.abandonAudioFocus(service)
-                service.mediaSessionCompat.isActive = false
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//                    audioManager.abandonAudioFocusRequest(audioFocusRequest)
+//                else
+//                    audioManager.abandonAudioFocus(service)
+//                service.mediaSessionCompat.isActive = false
                 service.stopForeground(true)
             }
         }
@@ -184,32 +185,4 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     fun getCurrentSong(): Song = MediaSession.getCurrentSong()
     fun getNextSong(): Song = MediaSession.getNextSong()
     fun getQueue(): Pair<List<Song>, List<Int>> = Pair(MediaSession.songList, MediaSession.queue)
-
-    private fun requestAudioFocus():Boolean {
-        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build()
-                )
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener(service).build()
-            audioManager.requestAudioFocus(audioFocusRequest)
-        } else {
-            audioManager.requestAudioFocus(
-                service,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN
-            )
-        }
-
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            MediaSession.play()
-            service.mediaSessionCompat.isActive = true
-            return true
-        }
-        return false
-    }
 }
