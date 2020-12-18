@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_play_next"
+        android:title="@string/add_to_queue" />
+    <item
+        android:id="@+id/action_add_to_playlist"
+        android:title="@string/add_to_playlist" />
+    <item
+        android:id="@+id/action_goTo_album"
+        android:title="@string/go_to_album" />
+    <item
+        android:id="@+id/action_goTo_artist"
+        android:title="@string/go_to_artist" />
+    <item
+        android:id="@+id/action_delete_song"
+        android:title="@string/delete"/>
+</menu>

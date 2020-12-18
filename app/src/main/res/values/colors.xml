@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#EA891F</color>
+    <color name="colorPrimaryDark">#CA771C</color>
+    <color name="colorAccent">#FFEB3B</color>
+    <color name="background">#fff</color>
+    <color name="textColor">#99000000</color>
+    <color name="hint">#C8807A7A</color>
+    <color name="splitter">#99000000</color>
+    <color name="toolbarTitle">#fff</color>
+    <color name="songBottomControl">@color/background</color>
+</resources>

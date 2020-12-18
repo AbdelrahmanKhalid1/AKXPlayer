@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/top_container">
+
+    <data>
+
+        <variable
+            name="song"
+            type="com.example.akxplayer.model.Song" />
+
+        <variable
+            name="viewModel"
+            type="com.example.akxplayer.ui.viewmodels.MediaViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/songBottomControl"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        tools:context=".ui.fragments.playback.BottomSongControlsFragment">
+
+        <ImageView
+            android:id="@+id/btn_song_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_up" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_song_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:padding="2dp"
+                android:singleLine="true"
+                android:text="@{song.title}"
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/text_song_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:padding="2dp"
+                android:singleLine="true"
+                android:text="@{song.artist}"
+                android:textColor="@color/textColor"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btn_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{()->viewModel.playOrPauseSong()}"
+            android:padding="4dp"
+            android:src="@drawable/ic_pause" />
+
+        <ImageView
+            android:id="@+id/btn_queue"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{()->viewModel.showQueue()}"
+            android:padding="4dp"
+            android:src="@drawable/ic_queue" />
+    </LinearLayout>
+</layout>
