@@ -1,6 +1,9 @@
 package com.example.akxplayer.ui.fragments.playback
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.akxplayer.R
-import com.example.akxplayer.constants.Repeat
-import com.example.akxplayer.constants.Shuffle
+import com.example.akxplayer.constants.RepeatMode
 import com.example.akxplayer.databinding.FragmentPlaybackBinding
 import com.example.akxplayer.ui.viewmodels.MediaViewModel
 import com.example.akxplayer.util.Util
@@ -37,6 +39,23 @@ class PlaybackFragment : Fragment() {
                 R.id.bottom_controls,
                 BottomSongControlsFragment()
             ).commit()
+
+        binding.btnShare.setOnClickListener {
+            val uri = Uri.withAppendedPath(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                mediaViewModel.getCurrentSong().id.toString()
+            )
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            shareIntent.type = "audio/*"
+            requireContext().startActivity(
+                Intent.createChooser(
+                    shareIntent,
+                    "Share Via....."
+                )
+            )
+        }
         return binding.root
     }
 
@@ -53,24 +72,20 @@ class PlaybackFragment : Fragment() {
             if (songPosition != -1) {
                 binding.song = mediaViewModel.getCurrentSong()
                 binding.nextSong = mediaViewModel.getNextSong()
+                binding.seekBar.max = mediaViewModel.getCurrentSong().getDuration()
             }
         })
 
         mediaViewModel.isPlaying.observe(viewLifecycleOwner, Observer { isPlaying ->
             if (isPlaying)
-                binding.btnPlay.setImageResource(R.drawable.ic_pause)
+                binding.btnPlay.setImageResource(R.drawable.ic_pause_circle_filled)
             else
-                binding.btnPlay.setImageResource(R.drawable.ic_play_arrow)
-        })
-
-        mediaViewModel.seekPosition.observe(viewLifecycleOwner, Observer { seekPosition ->
-            binding.textProcess.text = Util.fetchDuration(seekPosition)
-            binding.seekBar.progress = seekPosition
+                binding.btnPlay.setImageResource(R.drawable.ic_play_circle_filled)
         })
 
         mediaViewModel.shuffleMode.observe(viewLifecycleOwner, Observer { shuffleMode ->
             when (shuffleMode) {
-                Shuffle.ENABLE -> binding.btnShuffle.setImageResource(R.drawable.ic_shuffle_active)
+                true -> binding.btnShuffle.setImageResource(R.drawable.ic_shuffle_active)
                 else -> binding.btnShuffle.setImageResource(R.drawable.ic_shuffle)
             }
 //            binding.nextSong = mediaViewModel.getNextSong()
@@ -78,8 +93,8 @@ class PlaybackFragment : Fragment() {
 
         mediaViewModel.repeatMode.observe(viewLifecycleOwner, Observer { repeatMode ->
             when (repeatMode) {
-                Repeat.REPEAT_ALL -> binding.btnRepeat.setImageResource(R.drawable.ic_repeat_active)
-                Repeat.REPEAT_ONE -> binding.btnRepeat.setImageResource(R.drawable.ic_repeat_one_active)
+                RepeatMode.REPEAT_ALL -> binding.btnRepeat.setImageResource(R.drawable.ic_repeat_active)
+                RepeatMode.REPEAT_ONE -> binding.btnRepeat.setImageResource(R.drawable.ic_repeat_one_active)
                 else -> binding.btnRepeat.setImageResource(R.drawable.ic_repeat)
             }
             binding.nextSong = mediaViewModel.getNextSong()
@@ -87,6 +102,18 @@ class PlaybackFragment : Fragment() {
 
         mediaViewModel.title.observe(viewLifecycleOwner, Observer { title ->
             binding.textTitle.text = title
+        })
+
+        mediaViewModel.isFavorite.observe(viewLifecycleOwner, Observer { isFavorite ->
+            when (isFavorite) {
+                true -> binding.btnLike.setImageResource(R.drawable.ic_favorite)
+                else -> binding.btnLike.setImageResource(R.drawable.ic_not_favorite)
+            }
+        })
+
+        mediaViewModel.seekPosition.observe(viewLifecycleOwner, Observer { seekPosition ->
+            binding.textProcess.text = Util.fetchDuration(seekPosition)
+            binding.seekBar.progress = seekPosition
         })
     }
 

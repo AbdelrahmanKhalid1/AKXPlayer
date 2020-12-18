@@ -23,8 +23,8 @@ class SongPopupMenu(context: Context, attrs: AttributeSet) : AppCompatImageView(
         scaleType = ScaleType.CENTER_INSIDE
         setImageResource(R.drawable.ic_more_vert)
         setOnClickListener {
-//            if (playlistId.toInt() != -1)
-//                popupMenu.menu.findItem(R.id.popup_song_remove_playlist).isVisible = true
+            if (playlistId.toInt() != -1)
+                popupMenu.menu.findItem(R.id.action_remove_from_playlist).isVisible = true
             popupMenu.show()
             popupMenu.setOnMenuItemClickListener(clickListener)
         }
@@ -58,6 +58,10 @@ class SongPopupMenu(context: Context, attrs: AttributeSet) : AppCompatImageView(
             }
             R.id.action_delete_playlist->{
                 (menuListener as PopupMenuPlaylistListener).deletePlaylist(songId)
+                true
+            }
+            R.id.action_remove_from_playlist ->{
+                (menuListener as PopupMenuSongListener).removeFromPlaylist(songId, playlistId)
                 true
             }
             else -> false

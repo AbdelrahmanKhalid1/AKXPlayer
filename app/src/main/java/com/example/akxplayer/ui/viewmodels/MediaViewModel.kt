@@ -2,28 +2,24 @@ package com.example.akxplayer.ui.viewmodels
 
 import android.app.Application
 import android.content.*
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
-import android.net.Uri
-import android.os.Build
 import android.os.IBinder
 import android.os.Parcelable
-import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.akxplayer.constants.PlayingState
-import com.example.akxplayer.constants.Repeat
-import com.example.akxplayer.constants.Shuffle
+import com.example.akxplayer.constants.RepeatMode
+import com.example.akxplayer.db.entity.QueueEntity
 import com.example.akxplayer.model.Song
-import com.example.akxplayer.receiver.NoisyReceiver
 import com.example.akxplayer.repository.*
 import com.example.akxplayer.services.MediaPlayerService
+import com.example.akxplayer.ui.activities.MainActivity
 import com.example.akxplayer.ui.listeners.OnMediaControlsChange
-import com.example.akxplayer.util.MediaSession
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.ArrayList
 
@@ -32,91 +28,71 @@ private const val TAG = "MediaViewModel"
 class MediaViewModel(application: Application) : AndroidViewModel(application), ServiceConnection,
     OnMediaControlsChange {
 
-    private lateinit var service: MediaPlayerService
+    private lateinit var playerService: MediaPlayerService
     private val intent: Intent
     val rootSong = MutableLiveData<Int>()
     val title = MutableLiveData<String>()
     val isPlaying = MutableLiveData<Boolean>()
-    val shuffleMode = MutableLiveData<Shuffle>()
-    val repeatMode = MutableLiveData<Repeat>()
+    val shuffleMode = MutableLiveData<Boolean>()
+    val repeatMode = MutableLiveData<RepeatMode>()
     val seekPosition = MutableLiveData<Int>()
-    val goToQueue = MutableLiveData<Boolean>().apply {
-        value = false
-    }
+    val goToQueue = MutableLiveData<Boolean>()
+    val isFavorite = MutableLiveData<Boolean>()
 
     init {
         SongRepository.init(application)
-        if (MediaSession.queue.isEmpty()) {
-            MediaSession.init(application.contentResolver, this)
-//        QueueRepository.init(application)
-        } else {
-            MediaSession.init(this)
-            rootSong.value = MediaSession.currentPosition
-            isPlaying.value = true
-            shuffleMode.value = MediaSession.shuffleMode
-            repeatMode.value = MediaSession.repeatMode
-        }
-
+        QueueRepository.init(application)
         intent = Intent(application, MediaPlayerService::class.java)
         application.bindService(intent, this, Context.BIND_AUTO_CREATE)
     }
 
     fun playPreviousSong() {
-        MediaSession.playPreviousSong()
+        playerService.playPreviousSong()
     }
 
     fun playOrPauseSong() {
-        if (MediaSession.isPlaying()) {
-            MediaSession.pause()
-            service.createNotification()
-        } else {
-//            requestAudioFocus()
+        if (isPlaying.value!!)
+            playerService.pause()
+        else {
+            intent.putParcelableArrayListExtra("queue", null)
+            ContextCompat.startForegroundService(getApplication(), intent)
         }
     }
 
     fun playNextSong() {
-        MediaSession.playNextSong()
+        playerService.playNextSong()
     }
 
     fun setRepeatMode() {
-        val repeat = when (repeatMode.value) {
-            Repeat.REPEAT_OFF -> Repeat.REPEAT_ONE
-            Repeat.REPEAT_ONE -> Repeat.REPEAT_ALL
-            else -> Repeat.REPEAT_OFF
-        }
-        MediaSession.repeatMode = repeat
-        repeatMode.value = repeat
+        playerService.setRepeatMode()
     }
 
     fun setShuffleMode() {
-        val shuffle = when (shuffleMode.value) {
-            Shuffle.ENABLE -> Shuffle.DISABLE
-            else -> Shuffle.ENABLE
-        }
-        shuffleMode.value = shuffle
-        MediaSession.setShuffle(shuffle)
+        playerService.setShuffleMode()
+    }
+
+    fun addToFavorites() {
+        playerService.addRemoveSongFavorite()
     }
 
     @Synchronized
     fun playMedia(position: Int, songList: List<Song>, title: String): Completable =
         Completable.create {
             this.title.postValue(title)
-            MediaSession.setMediaSession(position, songList)
+            Log.d(TAG, "playMedia: ${Thread.currentThread().name}")
             intent.putExtra("position", position)
             intent.putParcelableArrayListExtra("queue", songList as ArrayList<out Parcelable>)
-//            mediaSession.play()
             ContextCompat.startForegroundService(getApplication(), intent)
             it.onComplete()
         }.subscribeOn(Schedulers.computation())
 
     @Synchronized
-    fun playMedia(position: Int): Completable = Completable.create {
-        MediaSession.seekTo(position, 0)
+    fun playMedia(currentSong: Int): Completable = Completable.create {
+        playerService.changeSong(currentSong)
         it.onComplete()
     }.subscribeOn(Schedulers.computation())
 
     override fun onSongChange(position: Int) {
-//        requestAudioFocus()
         rootSong.postValue(position)
     }
 
@@ -124,24 +100,23 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
         when (playerState) {
             PlayingState.PLAYING -> {
                 this.isPlaying.postValue(true)
-                getApplication<Application>().registerReceiver(NoisyReceiver(), IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
             }
-            PlayingState.PAUSED -> {
+            else -> {
                 this.isPlaying.postValue(false)
-//                getApplication<Application>().unregisterReceiver(NoisyReceiver())
-                service.stopForeground(false)
-            }
-            PlayingState.STOPPED -> {
-                this.isPlaying.postValue(false)
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-//                    audioManager.abandonAudioFocusRequest(audioFocusRequest)
-//                else
-//                    audioManager.abandonAudioFocus(service)
-//                service.mediaSessionCompat.isActive = false
-                service.stopForeground(true)
             }
         }
-        service.createNotification()
+    }
+
+    override fun onRepeatModeChanged(repeatMode: RepeatMode) {
+        this.repeatMode.value = repeatMode
+    }
+
+    override fun onAddRemoverSongFavorite(isFavorite: Boolean) {
+        this.isFavorite.postValue(isFavorite)
+    }
+
+    override fun onShuffleEnabled(shuffleEnabled: Boolean) {
+        shuffleMode.postValue(shuffleEnabled)
     }
 
     override fun onSeekPositionChange(seekPosition: Int) {
@@ -149,7 +124,7 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     }
 
     fun setSeekPosition(seekPosition: Long) {
-        MediaSession.seekTo(rootSong.value!!, seekPosition)
+        playerService.seekTo(seekPosition.toInt())
         this.seekPosition.postValue(seekPosition.toInt())
     }
 
@@ -158,31 +133,91 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
 
     override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
         val binder = p1 as MediaPlayerService.MediaServiceBinder
-        service = binder.getService()
+        playerService = binder.getService()
+        playerService.mediaControls = this
+        Log.d(TAG, "onServiceConnected: ${playerService.isConnected}")
+        if (!playerService.isConnected) {
+            fetchQueueDataFromDB()
+        } else {
+            initControls(playerService.getQueueInfo())
+            QueueRepository.getQueueTitle().subscribeOn(Schedulers.io()).subscribe { title ->
+                this.title.postValue(title)
+            }
+        }
     }
 
-    fun shareSong() {
-        val uri = Uri.withAppendedPath(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            MediaSession.getCurrentSong().id.toString()
-        )
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        shareIntent.type = "audio/*"
-        getApplication<Application>().startActivity(
-            Intent.createChooser(
-                shareIntent,
-                "Share Via....."
-            )
-        )
+    private fun fetchQueueDataFromDB() {
+        QueueRepository.loadQueue().subscribeOn(Schedulers.io()).subscribe(object :
+            SingleObserver<QueueEntity> {
+            override fun onSubscribe(d: Disposable?) {
+            }
+
+            override fun onSuccess(queueEntity: QueueEntity) {
+                var songList = emptyList<Song>()
+                var queue = emptyList<Int>()
+                val songIds = SongRepository.getSongIds()
+                if (songIds != null) {
+                    songList = SongRepository.getSongsForIds(songIds)
+                    queue = SongRepository.getSongOrder()
+                }
+                playerService.initControls(queueEntity, songList, queue)
+                initControls(queueEntity)
+                title.postValue(queueEntity.title)
+            }
+
+            override fun onError(e: Throwable?) {//called first time when Queue table is empty
+                val queueEntity = QueueEntity()
+                playerService.initControls(queueEntity, emptyList(), emptyList())
+                initControls(queueEntity)
+                QueueRepository.initializeQueue()
+            }
+        })
+
+    }
+
+    private fun initControls(queueEntity: QueueEntity) {
+        isPlaying.postValue(playerService.isPlaying())
+        rootSong.postValue(queueEntity.currentSong)
+        repeatMode.postValue(queueEntity.repeatMode)
+        shuffleMode.postValue(queueEntity.shuffleEnabled)
+        seekPosition.postValue(queueEntity.seekPosition)
     }
 
     fun showQueue() {
         goToQueue.value = true
     }
 
-    fun getCurrentSong(): Song = MediaSession.getCurrentSong()
-    fun getNextSong(): Song = MediaSession.getNextSong()
-    fun getQueue(): Pair<List<Song>, List<Int>> = Pair(MediaSession.songList, MediaSession.queue)
+    fun getCurrentSong(): Song = playerService.getCurrentSong()
+    fun getNextSong(): Song = playerService.getNextSong()
+    fun getQueue(): Pair<List<Song>, List<Int>> = Pair(playerService.songList, playerService.queue)
+
+    fun removeSongFromQueue(songId: Long) {
+        playerService.removeSongFromQueue(songId)
+    }
+
+    override fun onCleared() {
+        val queueEntity =
+            QueueEntity(
+                title = title.value!!,
+                shuffleEnabled = shuffleMode.value!!,
+                repeatMode = repeatMode.value!!,
+                currentSong = rootSong.value!!,
+                seekPosition = seekPosition.value!!
+            )
+        QueueRepository.saveQueue(queueEntity)
+            .subscribeOn(Schedulers.io()).subscribe()
+
+        SongRepository.saveSongList(playerService.songList, playerService.queue)
+            .subscribeOn(Schedulers.io()).subscribe()
+        
+        getApplication<Application>().unbindService(this)
+        super.onCleared()
+    }
+
+    fun addToQueue(songId: Long) {
+        SongRepository.getSongForId(songId).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { song->
+                playerService.addToQueue(song)
+            }
+    }
 }

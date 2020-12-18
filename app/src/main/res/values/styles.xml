@@ -10,6 +10,7 @@
         <item name="android:popupMenuStyle">@style/PopupMenuTheme</item>
         <item name="android:alertDialogTheme">@style/DialogTheme</item>
         <item name="android:windowActionBarOverlay">true</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -37,5 +38,10 @@
 
     <style name="PopupMenuTheme" parent="Widget.AppCompat.PopupMenu">
         <item name="android:itemBackground">@color/songBottomControl</item>
+    </style>
+
+    <style name="SplashScreen" parent="AppTheme">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 </resources>

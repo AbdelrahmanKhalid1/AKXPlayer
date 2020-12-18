@@ -2,6 +2,7 @@ package com.example.akxplayer.ui.activities
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -68,16 +69,12 @@ class SettingsActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = MenuInflater(this)
-        inflater.inflate(R.menu.menu_settings, menu)
+        menuInflater.inflate(R.menu.menu_settings, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_done -> finish()
-            else -> return false
-        }
+        finish()
         return true
     }
 }

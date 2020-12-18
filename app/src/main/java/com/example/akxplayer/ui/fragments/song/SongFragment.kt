@@ -3,6 +3,7 @@ package com.example.akxplayer.ui.fragments.song
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -12,7 +13,7 @@ import com.example.akxplayer.model.Song
 import com.example.akxplayer.ui.adapters.SongAdapter
 import com.example.akxplayer.ui.dialogs.AddToPlaylistDialog
 import com.example.akxplayer.ui.dialogs.CreatePlaylistDialog
-import com.example.akxplayer.ui.dialogs.DeleteSongDialog
+import com.example.akxplayer.ui.dialogs.delete.DeleteSongDialog
 import com.example.akxplayer.ui.fragments.album.AlbumDetailFragment
 import com.example.akxplayer.ui.fragments.album.OnAlbumPlayButtonClick
 import com.example.akxplayer.ui.fragments.artist.ArtistDetailFragment
@@ -31,7 +32,7 @@ private const val PLAYLIST = "PLAYLIST ID"
 private const val NAME = "NAME"
 
 class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenuSongListener,
-    OnDialogClickListener, OnAlbumPlayButtonClick {
+    OnAlbumPlayButtonClick {
 
     private lateinit var songViewModel: SongViewModel
     private lateinit var adapter: SongAdapter
@@ -60,29 +61,29 @@ class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenu
 
         songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
         songViewModel.init(context!!.contentResolver, albumId, artistId, genreId, playlistId)
-        songViewModel.loadSongs()
+        songViewModel.loadSongs(requireContext())
         songViewModel.getSongs().observe(viewLifecycleOwner, Observer { songs ->
             items = songs
-            Log.d(TAG, "onActivityCreated: ${songs.size}")
             adapter.songs = songs
             adapter.notifyDataSetChanged()
         })
     }
 
-    override fun onItemClick(position: Int,view: View) {
+    override fun onItemClick(position: Int, view: View) {
         mediaViewModel.playMedia(position, items, queueName).subscribe()
     }
 
     override fun addToQueue(songId: Long) {
-//        mediaViewModel.addToQueue(songId)
+        mediaViewModel.addToQueue(songId)
     }
 
     override fun addToPlaylist(songId: Long) {
-        val dialog = AddToPlaylistDialog(songId, this)
+        val dialog = AddToPlaylistDialog(songId, onAddToPlaylistDialogListener)
         dialog.show(parentFragmentManager, "Add Dialog")
     }
 
     override fun goToAlbum(songId: Long) {
+        Log.d(TAG, "goToAlbum: $albumId")
         if (albumId.compareTo(-1) == 0) {
             songViewModel.getSongAlbum(songId, context!!.contentResolver)
                 .subscribeOn(Schedulers.io())
@@ -105,13 +106,18 @@ class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenu
     }
 
     override fun deleteSong(songId: Long) {
-        val dialog = DeleteSongDialog(songId, this)
-        dialog.show(parentFragmentManager, "Delete Song")
+        if (songId.compareTo(mediaViewModel.rootSong.value!!) == 0) {
+            Toast.makeText(requireContext(), "Can't Delete Playing Song!", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val dialog = DeleteSongDialog(songId, onDeleteDialogClickListener)
+            dialog.show(parentFragmentManager, "Delete Song")
+        }
     }
 
     override fun removeFromPlaylist(songId: Long, playlistId: Long) {
         songViewModel.removeFromPlaylist(songId, playlistId, context!!.contentResolver)
-            .subscribe { songViewModel.loadSongs() }
+            .subscribe { songViewModel.loadSongs(requireContext()) }
     }
 
     private fun startFragment(fragment: Fragment, tag: String) {
@@ -130,18 +136,22 @@ class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenu
             .addToBackStack(tag).commit()
     }
 
-    override fun onDialogClick(songId: Long) {
-        when (songId.compareTo(-1)) {
-            0 ->  songViewModel.loadSongs()  //Delete Song is confirmed
-            else -> { //Create New Playlist
-                val dialog = CreatePlaylistDialog(songId, this)
-                dialog.show(parentFragmentManager, "Create Dialog")
-            }
+    private val onDeleteDialogClickListener = object : OnDialogClickListener {
+        override fun onDialogClick(songId: Long) {
+            songViewModel.loadSongs(requireContext())
+            mediaViewModel.removeSongFromQueue(songId)
+        }
+    }
+
+    private val onAddToPlaylistDialogListener = object : OnDialogClickListener {
+        override fun onDialogClick(songId: Long) {
+            val dialog = CreatePlaylistDialog(songId, null)
+            dialog.show(parentFragmentManager, "Create Dialog")
         }
     }
 
     override fun onClick() {
-//        mediaViewModel.playMedia(0, items, queueName)
+        mediaViewModel.playMedia(0, items, queueName)
     }
 
     companion object {

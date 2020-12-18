@@ -14,7 +14,7 @@ import com.example.akxplayer.databinding.FragmentPlaylistBinding
 import com.example.akxplayer.model.Playlist
 import com.example.akxplayer.ui.adapters.PlaylistAdapter
 import com.example.akxplayer.ui.dialogs.CreatePlaylistDialog
-import com.example.akxplayer.ui.dialogs.DeletePlaylistDialog
+import com.example.akxplayer.ui.dialogs.delete.DeletePlaylistDialog
 import com.example.akxplayer.ui.dialogs.RenameDialog
 import com.example.akxplayer.ui.listeners.OnDialogClickListener
 import com.example.akxplayer.ui.listeners.OnItemClickListener
@@ -55,8 +55,7 @@ class PlaylistFragment : Fragment(), OnItemClickListener, OnDialogClickListener,
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         buildRecycler()
-        playlistViewModel.init(context!!.contentResolver)
-        playlistViewModel.loadPlaylist()
+        playlistViewModel.loadPlaylist(requireContext())
 
         playlistViewModel.getPlaylists().observe(viewLifecycleOwner, Observer { playlists ->
             items = playlists
@@ -92,7 +91,7 @@ class PlaylistFragment : Fragment(), OnItemClickListener, OnDialogClickListener,
     }
 
     override fun onDialogClick(songId: Long) {
-        playlistViewModel.loadPlaylist()
+        playlistViewModel.loadPlaylist(requireContext())
         Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
     }
 

@@ -30,11 +30,7 @@ class QueueFragment : BaseFragment<SongAdapter, SongAdapter.SongViewHolder>() {
     }
 
     override fun onItemClick(position: Int, view: View) {
-        mediaViewModel.playMedia(position).subscribe{
-            requireContext().registerReceiver(
-                NoisyReceiver(), IntentFilter(
-                    AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-            )}
+        mediaViewModel.playMedia(position).subscribe()
         queueAdapter.songPosition = position
         queueAdapter.notifyDataSetChanged()
     }

@@ -68,8 +68,12 @@ dependencies {
     //RXJava
     implementation "io.reactivex.rxjava3:rxandroid:$rx_java_version"
     implementation "io.reactivex.rxjava3:rxjava:$rx_java_version"
+    implementation 'com.android.support:multidex:1.0.3'
 
-//    //room
-//    implementation "androidx.room:room-runtime:$room_version"
-//    kapt  "androidx.room:room-compiler:$room_version"
+    //room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt  "androidx.room:room-compiler:$room_version"
+
+    //Gson
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

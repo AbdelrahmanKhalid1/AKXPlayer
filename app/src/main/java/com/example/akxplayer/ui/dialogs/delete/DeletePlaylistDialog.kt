@@ -1,6 +1,7 @@
-package com.example.akxplayer.ui.dialogs
+package com.example.akxplayer.ui.dialogs.delete
 
 import com.example.akxplayer.repository.PlaylistRepository
+import com.example.akxplayer.ui.dialogs.delete.DeleteDialog
 import com.example.akxplayer.ui.listeners.OnDialogClickListener
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable

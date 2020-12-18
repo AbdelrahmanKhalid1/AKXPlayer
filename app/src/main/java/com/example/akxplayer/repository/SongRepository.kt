@@ -11,6 +11,11 @@ import android.provider.MediaStore.Audio.Media._ID
 import android.provider.MediaStore.Audio.Media.ALBUM_ID
 import android.provider.MediaStore.Audio.Media.ARTIST_ID
 import android.util.Log
+import com.example.akxplayer.db.AkxDatabase
+import com.example.akxplayer.db.dao.FavoriteDao
+import com.example.akxplayer.db.dao.SongDao
+import com.example.akxplayer.db.entity.FavoriteEntity
+import com.example.akxplayer.db.entity.SongEntity
 //import com.example.akxplayer.db.AkxDatabase
 //import com.example.akxplayer.db.dao.SongDao
 //import com.example.akxplayer.db.entity.SongEntity
@@ -24,10 +29,13 @@ private const val TAG = "SongRepository"
 object SongRepository {
 
     private lateinit var contentResolver: ContentResolver
-//    private lateinit var songDao: SongDao
+    private lateinit var songDao: SongDao
+    private lateinit var favoriteDao: FavoriteDao
 
     fun init(context: Context) {
-//        songDao = AkxDatabase.getInstance(context).songDao()
+        val db = AkxDatabase.getInstance(context)
+        songDao = db.songDao()
+        favoriteDao = db.favoriteDao()
         contentResolver = context.contentResolver
     }
 
@@ -76,45 +84,6 @@ object SongRepository {
             }
         }
 
-    fun getSongsForIds(ids: LongArray): Single<List<Song>> =
-        Single.create { emitter ->
-            val songs = ArrayList<Song>()
-            var selection = "_id IN ("
-            for (id in ids) {
-                selection += "$id,"
-            }
-            selection = selection.removeRange(selection.length - 1, selection.length)
-            selection += ")"
-
-            val cursor = contentResolver.query(
-                EXTERNAL_CONTENT_URI,
-                null,
-                "$IS_MUSIC !=0 AND $selection",
-                null,
-                DEFAULT_SORT_ORDER
-            )
-
-            if (cursor != null && cursor.moveToFirst()) {
-                while (!cursor.isAfterLast) {
-                    songs.add(Song.fetchFromCursor(cursor))
-                    cursor.moveToNext()
-                }
-                cursor.close()
-            }
-            Log.d(TAG, "setControls: ${songs.size} $songs")
-            emitter.onSuccess(songs)
-        }
-
-    fun getSongIds(): LongArray? {
-//        val songEntityList = songDao.getAllSongs()
-//        if (songEntityList.isEmpty())
-//            return null
-//        val longArray = LongArray(songEntityList.size)
-//        for (i in songEntityList.indices)
-//            longArray[i] = songEntityList[i].songId
-//        return longArray
-//    }
-//
 //    fun updateSongs(songList: List<Song>): Completable = Completable.create {
 //        val songEntityList = ArrayList<SongEntity>()
 //        for (song in songList) {
@@ -122,12 +91,52 @@ object SongRepository {
 //        }
 //        songDao.deleteAll()
 //        songDao.insertSongs(songEntityList)
-        return null
-    }
+////        return null
+//    }
 //    .subscribeOn(Schedulers.io())
 
     fun deleteSong(songId: Long) {
-//        contentResolver.delete(EXTERNAL_CONTENT_URI, "$_ID = $songId", null)
+        contentResolver.delete(EXTERNAL_CONTENT_URI, "$_ID = $songId", null)
+    }
+
+    fun getSongsForIds(ids: LongArray): List<Song> {
+        val songs = ArrayList<Song>()
+        var selection = "_id IN ("
+        for (id in ids) {
+            selection += "$id,"
+        }
+        selection = selection.removeRange(selection.length - 1, selection.length)
+        selection += ")"
+
+        val cursor = contentResolver.query(
+            EXTERNAL_CONTENT_URI,
+            null,
+            "$IS_MUSIC !=0 AND $selection",
+            null,
+            DEFAULT_SORT_ORDER
+        )
+
+        if (cursor != null && cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                songs.add(Song.fetchFromCursor(cursor))
+                cursor.moveToNext()
+            }
+            cursor.close()
+        }
+        Log.d(TAG, "setControls: ${songs.size} $songs")
+        return songs
+    }
+
+    fun getSongOrder(): List<Int> = songDao.getQueue()
+
+    fun getSongIds(): LongArray? {
+        val songEntityList = songDao.getSongs()
+        if (songEntityList.isEmpty())
+            return null
+        val longArray = LongArray(songEntityList.size)
+        for (i in songEntityList.indices)
+            longArray[i] = songEntityList[i].songId
+        return longArray
     }
 
     fun getSongTitle(songId: Long): String {
@@ -144,5 +153,46 @@ object SongRepository {
             }
         }
         return title
+    }
+
+    fun saveSongList(songList: List<Song>, queue: List<Int>): Completable = Completable.create {
+        songDao.deleteAll()
+        val songEntityList = ArrayList<SongEntity>()
+        val queueEntityList = ArrayList<SongEntity>()
+
+        for (song in songList) {
+            songEntityList.add(SongEntity(song.id, 1, 0))
+        }
+        songDao.insertSongs(songEntityList)
+
+        for (order in queue) {
+            queueEntityList.add(SongEntity(order.toLong(), 0, 0))
+        }
+        songDao.insertSongs(queueEntityList)
+        it.onComplete()
+    }
+
+    private fun addToFavorite(songId: Long) {
+        favoriteDao.add(FavoriteEntity(songId))
+    }
+
+    private fun removeFromFavorite(songId: Long) {
+        favoriteDao.remove(FavoriteEntity(songId))
+    }
+
+    fun isFavorite(songId: Long): Single<Boolean> = Single.create { emitter ->
+        val isFavorite = favoriteDao.isFavorite(songId)
+        emitter.onSuccess(songId == isFavorite)
+    }
+
+    fun addRemoveFavorite(songId: Long): Single<Boolean> = Single.create { emitter ->
+        val isFavorite = favoriteDao.isFavorite(songId)
+        if (isFavorite == songId) {
+            removeFromFavorite(songId)
+            emitter.onSuccess(false)
+        } else {
+            addToFavorite(songId)
+            emitter.onSuccess(true)
+        }
     }
 }

@@ -17,9 +17,7 @@ import io.reactivex.rxjava3.core.SingleObserver
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-private const val TAG = "CreatePlaylistDialog"
-
-class CreatePlaylistDialog(private val songId: Long, private val listener: OnDialogClickListener) :
+class CreatePlaylistDialog(private val songId: Long, private val listener: OnDialogClickListener?) :
     DialogFragment() {
 
     private lateinit var editText: EditText
@@ -48,11 +46,10 @@ class CreatePlaylistDialog(private val songId: Long, private val listener: OnDia
         observer = object : SingleObserver<Long>{
             override fun onSuccess(playlistId: Long) {
                 if (songId > -1) {
-                    Log.d(TAG, "onCreateDialog: $songId $playlistId")
                     PlaylistRepository.addSongToPlaylist(songId, playlistId, context.contentResolver)
                         .subscribe { Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show() }
                 } else {
-                    listener.onDialogClick(songId)
+                    listener?.onDialogClick(songId)
                 }
             }
 

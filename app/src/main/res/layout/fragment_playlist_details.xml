@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
 
         <variable
@@ -25,35 +23,24 @@
             app:elevation="0dp">
 
             <TextView
-                style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{playlist.name}"
-                android:textAlignment="center"
-                android:textColor="?android:textColorSecondaryInverse" />
+                android:textAlignment="center" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{playlist.songCount}"
-                android:textAlignment="center"
-                android:textColor="?android:textColorSecondaryInverse" />
+                android:textAlignment="center" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <!--        <androidx.recyclerview.widget.RecyclerView-->
-        <!--            android:id="@+id/recycler"-->
-        <!--            android:paddingVertical="8dp"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            tools:listitem="@layout/item_song"-->
-        <!--            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />-->
         <FrameLayout
             android:id="@+id/container_song"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="8dp"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
 

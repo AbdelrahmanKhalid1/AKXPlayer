@@ -73,13 +73,8 @@ data class Song(
             )
         }
         fun buildMediaMetaData(song: Song, contentResolver: ContentResolver): MediaMetadataCompat {
-//            val extras = Bundle()
             val bitmap = Util.getPic(song.albumId, contentResolver)
-//            extras.putParcelable(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-//            extras.putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, bitmap)
             return MediaMetadataCompat.Builder()
-
-//                .setMediaId(song.id.toString())
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.title)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.artist)

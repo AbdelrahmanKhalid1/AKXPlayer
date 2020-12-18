@@ -1,6 +1,7 @@
 package com.example.akxplayer.ui.adapters
 
 import android.graphics.Color
+import com.example.akxplayer.R
 import com.example.akxplayer.model.Song
 import com.example.akxplayer.ui.listeners.OnItemClickListener
 
@@ -14,10 +15,7 @@ class QueueAdapter(
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[songIndexList[position]]
         holder.bind(song)
-        if (songPosition == position) {
-            holder.itemView.setBackgroundColor(Color.LTGRAY)
-        } else
-            holder.itemView.setBackgroundColor(Color.WHITE)
+        holder.itemView.isPressed = songPosition == position
     }
 
     override fun getItemCount(): Int {

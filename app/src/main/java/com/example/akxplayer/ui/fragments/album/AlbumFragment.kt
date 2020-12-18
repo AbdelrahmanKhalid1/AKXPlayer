@@ -1,6 +1,7 @@
 package com.example.akxplayer.ui.fragments.album
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -18,7 +19,6 @@ import com.example.akxplayer.ui.adapters.AlbumAdapter
 import com.example.akxplayer.ui.viewmodels.AlbumViewModel
 
 private const val ARTIST_ID = "artistId"
-private const val TAG = "AlbumFragment"
 
 class AlbumFragment : BaseFragment<Album, RecyclerView.ViewHolder>() {
     private lateinit var albumViewModel: AlbumViewModel
@@ -36,7 +36,6 @@ class AlbumFragment : BaseFragment<Album, RecyclerView.ViewHolder>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         adapter = AlbumAdapter(this, artistId)
         val layoutManager = if (artistId.compareTo(-1) != 0) LinearLayoutManager(
             context!!,
@@ -47,11 +46,12 @@ class AlbumFragment : BaseFragment<Album, RecyclerView.ViewHolder>() {
 
         albumViewModel = ViewModelProvider(this)[AlbumViewModel::class.java]
         albumViewModel.init(context!!.contentResolver, artistId)
-        albumViewModel.loadAlbums()
         albumViewModel.getAlbums().observe(viewLifecycleOwner, Observer { albums ->
+        Log.d("text theme change", "onActivityCreated: ${albums.size}")
             items = albums
             adapter.setAlbums(albums)
         })
+        albumViewModel.loadAlbums()
     }
 
     override fun onItemClick(position: Int, view: View) {

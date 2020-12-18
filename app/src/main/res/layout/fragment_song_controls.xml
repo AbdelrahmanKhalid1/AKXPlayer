@@ -21,23 +21,24 @@
         android:background="@color/songBottomControl"
         android:gravity="top"
         android:orientation="horizontal"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="4dp"
+        android:paddingHorizontal="4dp"
         tools:context=".ui.fragments.playback.BottomSongControlsFragment">
 
         <ImageView
             android:id="@+id/btn_song_details"
             albumId="@{song.albumId}"
             error="@{@drawable/ic_headset}"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:scaleType="centerCrop"
+            android:layout_width="65dp"
+            android:layout_height="65dp" />
 
+        <!--    TODO mmkn hna a3ml recycler     -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="2dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="6dp"
             android:layout_weight="3"
             android:orientation="vertical">
 
@@ -65,17 +66,6 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btn_play"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="?selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="@{()->viewModel.playOrPauseSong()}"
-            android:padding="4dp"
-            android:src="@drawable/ic_pause" />
-
-        <ImageView
             android:id="@+id/btn_queue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -85,5 +75,16 @@
             android:onClick="@{()->viewModel.showQueue()}"
             android:padding="4dp"
             android:src="@drawable/ic_queue" />
+
+        <ImageView
+            android:id="@+id/btn_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{()->viewModel.playOrPauseSong()}"
+            android:padding="4dp"
+            android:src="@drawable/ic_pause" />
     </LinearLayout>
 </layout>

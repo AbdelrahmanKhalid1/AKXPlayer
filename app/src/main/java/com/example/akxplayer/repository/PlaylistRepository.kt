@@ -17,8 +17,6 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-private const val TAG = "PlaylistRepository"
-
 object PlaylistRepository {
 
     fun loadPlaylists(contentResolver: ContentResolver): Single<List<Playlist>> =
@@ -41,7 +39,6 @@ object PlaylistRepository {
                         )
                     )
                     playlists.add(playlist)
-                    Log.d(TAG, "loadPlaylists: $playlist")
                 } while (cursor.moveToNext())
                 cursor.close()
             }
@@ -83,7 +80,7 @@ object PlaylistRepository {
         }
 
     fun deletePlaylist(playlistId: Long, contentResolver: ContentResolver) {
-        val param = "_id = $playlistId"
+        val param = "$_ID=$playlistId"
         contentResolver.delete(EXTERNAL_CONTENT_URI, param, null)
     }
 
@@ -140,7 +137,6 @@ object PlaylistRepository {
                 cursor.moveToFirst()
                 while (!cursor.isAfterLast) {
                     val song = Song.fetchFromPlaylistCursor(cursor)
-                    Log.d(TAG, "getPlaylistSongs: $song")
                     songs.add(song)
                     cursor.moveToNext()
                 }

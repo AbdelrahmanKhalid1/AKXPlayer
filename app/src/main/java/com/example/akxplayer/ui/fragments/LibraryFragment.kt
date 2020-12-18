@@ -2,6 +2,7 @@ package com.example.akxplayer.ui.fragments
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,9 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.akxplayer.databinding.FragmentMainBinding
 import com.example.akxplayer.ui.adapters.SectionsPagerAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 
+private const val TAG = "LibraryFragment"
 class LibraryFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
@@ -19,7 +22,7 @@ class LibraryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMainBinding.inflate(
             inflater,
             container,
@@ -39,8 +42,8 @@ class LibraryFragment : Fragment() {
         if (checkReadExternalStoragePermission()) {
             requestPermissions(
                 arrayOf(
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
                 ),
                 99
             )
@@ -55,22 +58,16 @@ class LibraryFragment : Fragment() {
                 android.Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED)
 
-    private fun checkReadPhoneStatePermission(): Boolean = (
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.READ_PHONE_STATE
-            ) != PackageManager.PERMISSION_GRANTED)
-
     private fun setFragments() {
+        Log.d(TAG, "setFragments: MainStart stack count = ${parentFragmentManager.backStackEntryCount}")
         val sectionsPagerAdapter =
             SectionsPagerAdapter(
                 requireContext(),
-                parentFragmentManager
+                requireActivity()
             )
         val viewPager = binding.viewPager
         viewPager.adapter = sectionsPagerAdapter
-        binding.tabs.setupWithViewPager(viewPager)
-
+        sectionsPagerAdapter.connectTabWitPager(viewPager, binding.tabs)
         val settings = requireActivity().getSharedPreferences("AppSettingsPref", 0)
         val startPage = settings.getInt("startPage", 0)
         binding.viewPager.currentItem = startPage
@@ -89,19 +86,7 @@ class LibraryFragment : Fragment() {
                 )
             } else {
                 setFragments()
-                if(checkReadPhoneStatePermission())
-                    requestPermissions(
-                        arrayOf(android.Manifest.permission.READ_PHONE_STATE),
-                        100
-                    )
             }
-        }
-        else if(requestCode == 100){
-            if(grantResults[0] == PackageManager.PERMISSION_DENIED)
-                requestPermissions(
-                    arrayOf(android.Manifest.permission.READ_PHONE_STATE),
-                    100
-                )
         }
     }
 }

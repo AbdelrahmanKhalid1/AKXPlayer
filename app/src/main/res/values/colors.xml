@@ -9,4 +9,7 @@
     <color name="splitter">#99000000</color>
     <color name="toolbarTitle">#fff</color>
     <color name="songBottomControl">@color/background</color>
+    <color name="favorite">#FF0000</color>
+    <color name="queue">#99000000</color>
+    <color name="selected">#9A707070</color>
 </resources>

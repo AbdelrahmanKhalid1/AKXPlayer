@@ -3,13 +3,15 @@ package com.example.akxplayer.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.akxplayer.util.MediaSession
+import android.util.Log
 
 /**
  * Receiver for when unplugging HeadPhone
  */
-class NoisyReceiver : BroadcastReceiver() {
+private const val TAG = "NoisyReceiver"
+class NoisyReceiver(private val pausePlayer: () -> Unit) : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
-        MediaSession.pause()
+        Log.d(TAG, "onReceive: ")
+        pausePlayer()
     }
 }

@@ -36,10 +36,11 @@ object AlbumRepository {
 
     fun loadAlbumById(albumId: Long, contentResolver: ContentResolver): Single<Album> =
         Single.create { emitter ->
+            Log.d(TAG, "loadAlbumById: $albumId")
             val cursor = contentResolver.query(
                 EXTERNAL_CONTENT_URI,
                 null,
-                "album_id=$albumId",
+                "_id=$albumId",
                 null,
                 null
             )

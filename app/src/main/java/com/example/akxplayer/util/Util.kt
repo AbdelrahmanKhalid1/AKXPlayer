@@ -24,12 +24,9 @@ class Util {
         fun fetchDuration(duration: Int): String {
             var fetchedDuration = ""
             var unit = duration / 1000 // convert from milli to sec
-
-            for (i in 0..1) {
-                val numOfUnit = unit / 60
-                if (numOfUnit == 0) //has no min or hour or both
-                    break
-
+            if(unit == 0)
+                return "0:00"
+            while (unit > 0) {
                 val time = unit % 60
                 fetchedDuration = if (time < 10)
                     ":0$time$fetchedDuration"
@@ -37,7 +34,8 @@ class Util {
                     ":$time$fetchedDuration"
                 unit /= 60
             }
-            return "$unit$fetchedDuration"
+            fetchedDuration = fetchedDuration.substring(1, fetchedDuration.length)
+            return if (fetchedDuration.split(':').size == 1) "00:$fetchedDuration" else fetchedDuration
         }
 
         fun getPic(albumId: Long, contentResolver: ContentResolver): Bitmap? {

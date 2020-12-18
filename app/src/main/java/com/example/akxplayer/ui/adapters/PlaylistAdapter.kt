@@ -1,6 +1,7 @@
 package com.example.akxplayer.ui.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.akxplayer.R
@@ -44,7 +45,10 @@ class PlaylistAdapter(
 
         fun bind(playlist: Playlist) {
             binding.playlist = playlist
-            binding.btnPlaylistOption.songId = playlist.id
+            if (playlist.id.compareTo(-2) != 0)
+                binding.btnPlaylistOption.songId = playlist.id
+            else
+                binding.btnPlaylistOption.visibility = View.INVISIBLE
         }
     }
 }
