@@ -34,8 +34,11 @@ import com.example.akxplayer.ui.activities.MainActivity
 import com.example.akxplayer.ui.listeners.OnMediaControlsChange
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.FileNotFoundException
+import java.lang.Exception
 import kotlin.random.Random
 
 private const val TAG = "MediaPlayerService"
@@ -64,6 +67,7 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
     var isConnected = false
     private lateinit var noisyReceiver: NoisyReceiver
     private var requestAudioResult = -1
+    private lateinit var seeker : Completable
 
     override fun onCreate() {
         super.onCreate()
@@ -130,6 +134,7 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
                 .setAcceptsDelayedFocusGain(true)
                 .setOnAudioFocusChangeListener(this).build()
         }
+        seeker = startSeeker()
         noisyReceiver = NoisyReceiver { pause() }
     }
 
@@ -165,23 +170,27 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
             if (pfd != null) {
                 val fd = pfd.fileDescriptor
                 setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING)
-                if (player.isPlaying)
+                if (player.isPlaying) {
                     player.stop()
-                player.reset()
-                player.setDataSource(fd)
-                player.prepare()
-                player.seekTo(0)
+                    player.reset()
+                    player.release()
+                }
+                val newPlayer = MediaPlayer()
+                newPlayer.setDataSource(fd)
+                newPlayer.prepare()
+                newPlayer.seekTo(0)
                 mediaSession.setMetadata(
                     Song.buildMediaMetaData(
                         song,
                         contentResolver
                     )
                 )
+                player = newPlayer
                 mediaControls.onSongChange(currentQueueIndex)
             }
         } catch (ignore: FileNotFoundException) {
             stop()
-        } catch (ignore: IllegalStateException){
+        } catch (ignore: IllegalStateException) {
             Log.e(TAG, "prepareMediaPlayer: ", ignore)
         }
     }
@@ -246,10 +255,11 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         if (requestAudioResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
             requestAudioResult = requestAudioFocus()
         player.start()
+        seeker.subscribe()
         mediaSession.isActive = true
         setMediaPlaybackStateWithActions(PlaybackStateCompat.STATE_PLAYING, 1.0f)
         mediaControls.onPlayerStateChanged(PlayingState.PLAYING)
-        startSeeker().subscribe()
+
 
         isFavorite(songList[currentQueueIndex].id)
             .subscribeOn(Schedulers.io())
@@ -485,11 +495,15 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
     }
 
     private fun startSeeker(): Completable = Completable.create {
-        while (player.isPlaying) {
-            mediaControls.onSeekPositionChange(player.currentPosition)
+        try {
+            while (player.isPlaying) {
+                mediaControls.onSeekPositionChange(player.currentPosition)
+            }
+            if (player.currentPosition >= player.duration)
+                playNextSong()
+        } catch (ignore: Exception) {
+            Log.e(TAG, "startSeeker: ", ignore)
         }
-        if (player.currentPosition >= player.duration)
-            playNextSong()
     }.subscribeOn(Schedulers.computation())
 
     override fun onBind(p0: Intent?): IBinder = binder

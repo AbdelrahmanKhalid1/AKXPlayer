@@ -75,7 +75,6 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
         playerService.addRemoveSongFavorite()
     }
 
-    @Synchronized
     fun playMedia(position: Int, songList: List<Song>, title: String): Completable =
         Completable.create {
             this.title.postValue(title)
@@ -85,7 +84,6 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
             it.onComplete()
         }.subscribeOn(Schedulers.computation())
 
-    @Synchronized
     fun playMedia(currentSong: Int): Completable = Completable.create {
         playerService.changeSong(currentSong)
         it.onComplete()
