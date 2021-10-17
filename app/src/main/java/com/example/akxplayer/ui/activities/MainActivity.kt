@@ -28,8 +28,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startCounter++
-        Log.d(TAG, "onCreate: MainStart $startCounter")
         setContentView(R.layout.activity_main)
         playbackFragment = PlaybackFragment()
 
@@ -62,12 +60,18 @@ class MainActivity : AppCompatActivity() {
             }
         })
         mediaViewModel.rootSong.observe(this, Observer { songPosition ->
+            Log.d(TAG, "onCreate: $songPosition")
             if (songPosition != -1) {
-                if (slidingUpPanelLayout.panelState == HIDDEN)
+                if(slidingUpPanelLayout.panelState == HIDDEN)
                     slidingUpPanelLayout.panelState = COLLAPSED
             }else
                 slidingUpPanelLayout.panelState = HIDDEN
         })
+
+//        mediaViewModel.isPlaying.observe(this, Observer { isPlaying->
+//            if(isPlaying)
+//                mediaViewModel.goToQueue.value = true
+//        })
     }
 
     private val panelSlideListener = object : PanelSlideListener {
@@ -85,28 +89,11 @@ class MainActivity : AppCompatActivity() {
             previousState: SlidingUpPanelLayout.PanelState?,
             newState: SlidingUpPanelLayout.PanelState?
         ) {
+            if(newState == COLLAPSED){
+                Log.d(TAG, "onPanelStateChanged: $newState")
+                playbackFragment.bottomSongControlsView.alpha = 1f
+            }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val menuInflater = MenuInflater(this)
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.action_setting-> startActivity(Intent(this, SettingsActivity::class.java))
-            R.id.action_about -> openDialogAbout()
-            else ->
-                return false
-        }
-        return true
-    }
-
-    private fun openDialogAbout(){
-        val aboutDialog = AboutDialog()
-        aboutDialog.show(supportFragmentManager, "About Dialog")
     }
 
     override fun onBackPressed() {
@@ -117,10 +104,5 @@ class MainActivity : AppCompatActivity() {
                 slidingUpPanelLayout.isTouchEnabled = true
             }
         }
-    }
-
-    companion object{
-        @JvmStatic
-        var startCounter =0
     }
 }

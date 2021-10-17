@@ -1,5 +1,6 @@
 package com.example.akxplayer.services
 
+import android.app.PendingIntent
 import android.app.Service
 import android.content.ContentUris
 import android.content.Context
@@ -29,6 +30,7 @@ import com.example.akxplayer.repository.QueueRepository.updateRepeatMode
 import com.example.akxplayer.repository.QueueRepository.updateSeekPosition
 import com.example.akxplayer.repository.SongRepository.addRemoveFavorite
 import com.example.akxplayer.repository.SongRepository.isFavorite
+import com.example.akxplayer.ui.activities.MainActivity
 import com.example.akxplayer.ui.listeners.OnMediaControlsChange
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -60,12 +62,22 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
     var songList = emptyList<Song>()
     var queue = emptyList<Int>()
     var isConnected = false
+    private lateinit var noisyReceiver: NoisyReceiver
+    private var requestAudioResult = -1
 
     override fun onCreate() {
         super.onCreate()
 //        mediaServiceHelper = MediaServiceHelper()
         mediaSession = MediaSessionCompat(this, TAG)
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+        mediaSession.setSessionActivity(
+            PendingIntent.getActivity(
+                this,
+                1,
+                Intent(this, MainActivity::class.java),
+                0
+            )
+        )
         mediaSession.setCallback(object : MediaSessionCompat.Callback() {
             override fun onPause() {
                 pause()
@@ -118,6 +130,7 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
                 .setAcceptsDelayedFocusGain(true)
                 .setOnAudioFocusChangeListener(this).build()
         }
+        noisyReceiver = NoisyReceiver { pause() }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -128,22 +141,8 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
                 try {
                     songList = intent.getParcelableArrayListExtra("queue")!!
                     currentQueueIndex = intent.getIntExtra("position", -1)
+                    Log.d(TAG, "onStartCommand: size=${songList.size} position=$currentQueueIndex")
                     prepareMediaPlayer(songList[currentQueueIndex])
-                    isFavorite(songList[currentQueueIndex].id).subscribeOn(Schedulers.io())
-                        .subscribe { isFavorite ->
-                            this.isFavorite = isFavorite
-                            mediaControls.onAddRemoverSongFavorite(isFavorite)
-                            startForeground(
-                                1,
-                                AKX.createNotification(
-                                    baseContext,
-                                    mediaSession,
-                                    player.isPlaying,
-                                    isFavorite,
-                                    repeatMode
-                                )
-                            )
-                        }
                     prepareQueue()
                 } catch (ignore: NullPointerException) {
                     Log.d(TAG, "onStartCommand: Exception")
@@ -158,7 +157,6 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
 
     private fun prepareMediaPlayer(song: Song) {
         try {
-            Log.d(TAG, "prepareMediaPlayer: ")
             val uri = ContentUris.withAppendedId(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 song.id
@@ -167,13 +165,12 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
             if (pfd != null) {
                 val fd = pfd.fileDescriptor
                 setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING)
+                if (player.isPlaying)
+                    player.stop()
                 player.reset()
                 player.setDataSource(fd)
                 player.prepare()
                 player.seekTo(0)
-                player.setOnCompletionListener {
-                    playNextSong()
-                }
                 mediaSession.setMetadata(
                     Song.buildMediaMetaData(
                         song,
@@ -184,6 +181,8 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
             }
         } catch (ignore: FileNotFoundException) {
             stop()
+        } catch (ignore: IllegalStateException){
+            Log.e(TAG, "prepareMediaPlayer: ", ignore)
         }
     }
 
@@ -202,15 +201,16 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         }
     }
 
-    private fun requestAudioFocus() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        audioManager.requestAudioFocus(audioFocusRequest)
-    else {
-        audioManager.requestAudioFocus(
-            this,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        )
-    }
+    private fun requestAudioFocus() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            audioManager.requestAudioFocus(audioFocusRequest)
+        else {
+            audioManager.requestAudioFocus(
+                this,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN
+            )
+        }
 
     private fun stop() {
         player.stop()
@@ -239,41 +239,47 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         )
         mediaControls.onPlayerStateChanged(PlayingState.PAUSED)
         stopForeground(false)
+        unregisterReceiver(noisyReceiver)
     }
 
     fun play() {
-        val result = requestAudioFocus()
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            player.start()
-            mediaSession.isActive = true
-            setMediaPlaybackStateWithActions(PlaybackStateCompat.STATE_PLAYING, 1.0f)
-            mediaControls.onPlayerStateChanged(PlayingState.PLAYING)
-            startSeeker().subscribe()
-            startForeground(
-                1,
-                AKX.createNotification(
-                    baseContext,
-                    mediaSession,
-                    player.isPlaying,
-                    isFavorite,
-                    repeatMode
-                )
-            )
-        }
+        if (requestAudioResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+            requestAudioResult = requestAudioFocus()
+        player.start()
+        mediaSession.isActive = true
+        setMediaPlaybackStateWithActions(PlaybackStateCompat.STATE_PLAYING, 1.0f)
+        mediaControls.onPlayerStateChanged(PlayingState.PLAYING)
+        startSeeker().subscribe()
 
+        isFavorite(songList[currentQueueIndex].id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { isFavorite ->
+                this.isFavorite = isFavorite
+                mediaControls.onAddRemoverSongFavorite(isFavorite)
+                startForeground(
+                    1,
+                    AKX.createNotification(
+                        baseContext,
+                        mediaSession,
+                        player.isPlaying,
+                        isFavorite,
+                        repeatMode
+                    )
+                )
+            }
         val intent = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        val pause = {pause()}
-        registerReceiver(NoisyReceiver(pause), intent)
+        registerReceiver(noisyReceiver, intent)
     }
 
     fun playNextSong() {
-        setMediaPlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT)
-        mediaControls.onPlayerStateChanged(PlayingState.PAUSED)
-        currentQueueIndex = getNextIndex()
         try {
+            currentQueueIndex = getNextIndex()
+            setMediaPlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT)
+            mediaControls.onPlayerStateChanged(PlayingState.PAUSED)
             prepareMediaPlayer(songList[queue[currentQueueIndex]])
             play()
-        } catch (ignore: IndexOutOfBoundsException) {
+        } catch (ignore: IndexOutOfBoundsException) {//end of queue
             Log.d(TAG, "playNextSong: ")
             mediaControls.onPlayerStateChanged(PlayingState.PLAYING)
             setMediaPlaybackStateWithActions(PlaybackStateCompat.STATE_PLAYING, 1.0f)
@@ -282,10 +288,10 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
     }
 
     fun playPreviousSong() {
-        setMediaPlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS)
-        mediaControls.onPlayerStateChanged(PlayingState.PAUSED)
-        currentQueueIndex = getPreviousIndex()
         try {
+            currentQueueIndex = getPreviousIndex()
+            setMediaPlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS)
+            mediaControls.onPlayerStateChanged(PlayingState.PAUSED)
             prepareMediaPlayer(songList[queue[currentQueueIndex]])
             play()
         } catch (ignore: IndexOutOfBoundsException) {
@@ -299,13 +305,25 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
     private fun getNextIndex() = when (repeatMode) {
         RepeatMode.REPEAT_ONE -> currentQueueIndex
         RepeatMode.REPEAT_ALL -> (currentQueueIndex + 1) % songList.size
-        else -> currentQueueIndex + 1
+        else -> {
+            val tempIndex = currentQueueIndex + 1
+            if (tempIndex >= songList.size) {
+                throw IndexOutOfBoundsException("index out of range")
+            }
+            tempIndex
+        }
     }
 
     private fun getPreviousIndex() = when (repeatMode) {
         RepeatMode.REPEAT_ONE -> currentQueueIndex
         RepeatMode.REPEAT_ALL -> if (currentQueueIndex - 1 == -1) songList.size - 1 else currentQueueIndex - 1
-        else -> currentQueueIndex - 1
+        else -> {
+            val tempIndex = currentQueueIndex - 1
+            if (tempIndex <= -1) {
+                throw IndexOutOfBoundsException("index out of range")
+            }
+            tempIndex
+        }
     }
 
     fun setRepeatMode() {
@@ -470,6 +488,8 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         while (player.isPlaying) {
             mediaControls.onSeekPositionChange(player.currentPosition)
         }
+        if (player.currentPosition >= player.duration)
+            playNextSong()
     }.subscribeOn(Schedulers.computation())
 
     override fun onBind(p0: Intent?): IBinder = binder

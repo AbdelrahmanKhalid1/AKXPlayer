@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#EA891F</color>
-    <color name="colorPrimaryDark">#CA771C</color>
-    <color name="colorAccent">#FFEB3B</color>
+    <color name="colorPrimary">#EDEDED</color>
+    <color name="colorPrimaryDark">#EDEDED</color>
+    <color name="colorAccent">#3F51B5</color>
     <color name="background">#fff</color>
-    <color name="textColor">#99000000</color>
+    <color name="textColor">#C9000000</color>
+    <color name="iconColor">#8D000000</color>
+    <color name="iconBackground">#F8F8F8</color>
     <color name="hint">#C8807A7A</color>
     <color name="splitter">#99000000</color>
-    <color name="toolbarTitle">#fff</color>
+    <color name="toolbarTitle">#000</color>
     <color name="songBottomControl">@color/background</color>
     <color name="favorite">#FF0000</color>
     <color name="queue">#99000000</color>

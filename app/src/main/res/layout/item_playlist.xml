@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="@{playlist.songCount}"
+                android:text="@{String.valueOf(playlist.songCount)}"
                 android:textColor="@color/textColor" />
         </LinearLayout>
 

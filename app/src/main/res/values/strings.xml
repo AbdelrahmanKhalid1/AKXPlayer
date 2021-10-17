@@ -46,4 +46,5 @@
         AkxPlayer is an open source, fully featured music player that works
         across all form factors including phones, wear and assistant.
     </string>
+    <string name="search">Search</string>
 </resources>

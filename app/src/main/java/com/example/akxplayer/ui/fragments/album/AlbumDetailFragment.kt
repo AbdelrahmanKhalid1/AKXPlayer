@@ -1,13 +1,14 @@
 package com.example.akxplayer.ui.fragments.album
 
 import android.content.ContentUris
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
@@ -20,6 +21,9 @@ import com.example.akxplayer.R
 import com.example.akxplayer.databinding.FragmentAlbumDetailBinding
 import com.example.akxplayer.model.Album
 import com.example.akxplayer.ui.fragments.song.SongFragment
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
+import com.google.android.material.appbar.CollapsingToolbarLayout
 
 
 private const val ALBUM = "album"
@@ -45,7 +49,7 @@ class AlbumDetailFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View{
 
         _binding = FragmentAlbumDetailBinding.inflate(
             inflater,
@@ -70,13 +74,17 @@ class AlbumDetailFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.album = album
         loadImage()
-        binding.btnPlay.setOnClickListener { playButtonClick.onClick() }
+        val activity = requireActivity() as AppCompatActivity
+        activity.setSupportActionBar(binding.toolbar as Toolbar)
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.collapsingToolbar.title = album.name
+        setHasOptionsMenu(true)
+        binding.collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT)
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val songFragment = SongFragment.newInstance(album.id, artistId, -1, -1, album.name)
         playButtonClick = songFragment
         childFragmentManager.beginTransaction().replace(
@@ -84,6 +92,15 @@ class AlbumDetailFragment : Fragment() {
             songFragment,
             null
         ).commit()
+        binding.btnPlay.setOnClickListener { playButtonClick.onClick() }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            parentFragmentManager.popBackStack()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun loadImage() {

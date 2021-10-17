@@ -2,22 +2,36 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data/>
+    <data />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background">
 
+
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
-            <include
-                android:id="@+id/toolbar"
-                layout="@layout/app_toolbar" />
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:title="Browse"
+                app:layout_scrollFlags="scroll">
+
+                <include
+                    android:id="@+id/toolbar"
+                    layout="@layout/app_toolbar" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"/>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabs"
@@ -26,6 +40,7 @@
                 android:background="?colorPrimary"
                 app:tabIndicatorHeight="3dp"
                 app:tabMode="auto"
+                app:tabTextColor="#8C8C8C"
                 app:tabSelectedTextColor="?colorAccent" />
         </com.google.android.material.appbar.AppBarLayout>
 

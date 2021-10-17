@@ -35,7 +35,7 @@ class BottomSongControlsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mediaViewModel = ViewModelProvider(activity!!).get(MediaViewModel::class.java)
+        mediaViewModel = ViewModelProvider(requireActivity()).get(MediaViewModel::class.java)
         binding.viewModel = mediaViewModel
         mediaViewModel.rootSong.observe(viewLifecycleOwner, Observer { songPosition ->
             if (songPosition != -1)

@@ -23,7 +23,7 @@ data class Artist(
         fun fetchFromCursor(cursor: Cursor):Artist{
             return Artist(
                 cursor.getLong(cursor.getColumnIndex(_ID)),
-                cursor.getString(cursor.getColumnIndex(ARTIST)),
+                cursor.getString(cursor.getColumnIndex(ARTIST)) ?: "Unknown",
                 cursor.getInt(cursor.getColumnIndex(NUMBER_OF_ALBUMS)),
                 cursor.getInt(cursor.getColumnIndex(NUMBER_OF_TRACKS))
             )

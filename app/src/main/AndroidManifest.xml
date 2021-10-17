@@ -20,15 +20,21 @@
             android:screenOrientation="portrait"
             android:theme="@style/SplashScreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/search" />
+        </activity>
 
         <activity
             android:name=".ui.activities.SettingsActivity"
@@ -40,8 +46,9 @@
             </intent-filter>
         </receiver>
 
-         <receiver android:name=".receiver.NoisyReceiver"
-         android:enabled="true"/>
+        <receiver
+            android:name=".receiver.NoisyReceiver"
+            android:enabled="true" />
 
         <service
             android:name=".services.MediaPlayerService"

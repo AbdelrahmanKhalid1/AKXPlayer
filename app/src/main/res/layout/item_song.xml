@@ -22,7 +22,9 @@
         <ImageView
             android:id="@+id/image_album_art"
             albumId="@{song.albumId}"
-            error="@{@drawable/ic_headset}"
+            android:background="@color/iconBackground"
+            android:src="@drawable/ic_album"
+            error="@{@drawable/ic_album}"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop" />

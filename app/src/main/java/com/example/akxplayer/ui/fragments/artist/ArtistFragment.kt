@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.akxplayer.R
 import com.example.akxplayer.ui.fragments.base.BaseFragment
@@ -23,7 +24,7 @@ class ArtistFragment : BaseFragment<Artist, ArtistAdapter.ArtistViewHolder>() {
         artistViewModel = ViewModelProvider(this)[ArtistViewModel::class.java]
         artistViewModel.init(context!!.contentResolver)
         adapter = ArtistAdapter(this)
-        buildRecycler(LinearLayoutManager(context!!), adapter)
+        buildRecycler(LinearLayoutManager(requireContext()), adapter)
         artistViewModel.getArtist()
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer { artists ->
                 items = artists

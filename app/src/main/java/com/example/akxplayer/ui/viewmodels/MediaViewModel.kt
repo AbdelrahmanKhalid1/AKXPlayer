@@ -79,7 +79,6 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     fun playMedia(position: Int, songList: List<Song>, title: String): Completable =
         Completable.create {
             this.title.postValue(title)
-            Log.d(TAG, "playMedia: ${Thread.currentThread().name}")
             intent.putExtra("position", position)
             intent.putParcelableArrayListExtra("queue", songList as ArrayList<out Parcelable>)
             ContextCompat.startForegroundService(getApplication(), intent)
@@ -196,27 +195,29 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
     }
 
     override fun onCleared() {
-        val queueEntity =
-            QueueEntity(
-                title = title.value!!,
-                shuffleEnabled = shuffleMode.value!!,
-                repeatMode = repeatMode.value!!,
-                currentSong = rootSong.value!!,
-                seekPosition = seekPosition.value!!
-            )
-        QueueRepository.saveQueue(queueEntity)
-            .subscribeOn(Schedulers.io()).subscribe()
+        title.value?.let {
+            val queueEntity =
+                QueueEntity(
+                    title = it,
+                    shuffleEnabled = shuffleMode.value!!,
+                    repeatMode = repeatMode.value!!,
+                    currentSong = rootSong.value!!,
+                    seekPosition = seekPosition.value!!
+                )
+            QueueRepository.saveQueue(queueEntity)
+                .subscribeOn(Schedulers.io()).subscribe()
 
-        SongRepository.saveSongList(playerService.songList, playerService.queue)
-            .subscribeOn(Schedulers.io()).subscribe()
-        
-        getApplication<Application>().unbindService(this)
+            SongRepository.saveSongList(playerService.songList, playerService.queue)
+                .subscribeOn(Schedulers.io()).subscribe()
+
+            getApplication<Application>().unbindService(this)
+        }
         super.onCleared()
     }
 
     fun addToQueue(songId: Long) {
         SongRepository.getSongForId(songId).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread()).subscribe { song->
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { song ->
                 playerService.addToQueue(song)
             }
     }

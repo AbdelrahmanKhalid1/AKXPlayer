@@ -29,9 +29,9 @@ data class Album(
         fun fetchFromCursor(cursor: Cursor): Album {
             return Album(
                 cursor.getLong(cursor.getColumnIndex(_ID)),
-                cursor.getString(cursor.getColumnIndex(ALBUM)),
+                cursor.getString(cursor.getColumnIndex(ALBUM)) ?: "Unknown",
                 cursor.getLong(cursor.getColumnIndex(ARTIST_ID)),
-                cursor.getString(cursor.getColumnIndex(ARTIST)),
+                cursor.getString(cursor.getColumnIndex(ARTIST))?: "Unknown",
                 cursor.getInt(cursor.getColumnIndex(NUMBER_OF_SONGS)),
                 cursor.getInt(cursor.getColumnIndex(FIRST_YEAR))
             )

@@ -31,14 +31,16 @@ class PlaybackFragment : Fragment() {
     ): View? {
         _binding = FragmentPlaybackBinding.inflate(inflater, container, false)
         bottomSongControlsView = binding.bottomControls
-        viewDragDown = binding.viewDragDown
-        binding.lifecycleOwner = this
-        binding.seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener)
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.bottom_controls,
-                BottomSongControlsFragment()
+                BottomSongControlsFragment(),
+                "Bottom Song Controls"
             ).commit()
+        viewDragDown = binding.viewDragDown
+
+        binding.lifecycleOwner = this
+        binding.seekBar.setOnSeekBarChangeListener(onSeekBarChangeListener)
 
         binding.btnShare.setOnClickListener {
             val uri = Uri.withAppendedPath(
@@ -70,9 +72,10 @@ class PlaybackFragment : Fragment() {
     private fun updateUI() {
         mediaViewModel.rootSong.observe(viewLifecycleOwner, Observer { songPosition ->
             if (songPosition != -1) {
-                binding.song = mediaViewModel.getCurrentSong()
+                val currentSong = mediaViewModel.getCurrentSong()
+                binding.song = currentSong
                 binding.nextSong = mediaViewModel.getNextSong()
-                binding.seekBar.max = mediaViewModel.getCurrentSong().getDuration()
+                binding.seekBar.max = currentSong.getDuration()
             }
         })
 

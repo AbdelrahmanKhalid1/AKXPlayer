@@ -17,7 +17,7 @@ class Genre (
         fun fetchFromCursor(cursor: Cursor): Genre {
             return Genre(
                 cursor.getLong(cursor.getColumnIndex(_ID)),
-                cursor.getString(cursor.getColumnIndex(NAME)),
+                cursor.getString(cursor.getColumnIndex(NAME)) ?: "Unknown",
                 "0"
             )
         }

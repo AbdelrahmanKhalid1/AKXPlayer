@@ -151,7 +151,7 @@ class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenu
     }
 
     override fun onClick() {
-        mediaViewModel.playMedia(0, items, queueName)
+        mediaViewModel.playMedia(0, items, queueName).subscribe()
     }
 
     companion object {

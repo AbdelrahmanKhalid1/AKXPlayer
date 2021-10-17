@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+    android:hint="Search music"
+    android:imeOptions="actionSearch"
+    android:inputType="text"
+    android:label="@string/app_name">
+    <actionkey
+        android:keycode="KEYCODE_0"
+        android:queryActionMsg="string"
+        android:suggestActionMsg="string"
+        android:suggestActionMsgColumn="string" />
+</searchable>
+
+    <!--    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"-->
+    <!--    android:searchButtonText="string resource"-->
+    <!--    android:searchSuggestAuthority="string"-->
+    <!--    android:searchSuggestIntentAction="string"-->
+    <!--    android:searchSuggestIntentData="string"-->
+    <!--    android:searchSuggestPath="string"-->
+    <!--    android:searchSuggestSelection="string"-->
+    <!--    android:searchSuggestThreshold="int"-->
+    <!--    android:includeInGlobalSearch=["true" | "false"]-->
+    <!--    android:searchSettingsDescription="string resource"-->
+    <!--    android:queryAfterZeroResults=["true" | "false"]-->
+    <!--    android:voiceLanguageModel=["free-form" | "web_search"]-->
+    <!--    android:voicePromptText="string resource"-->
+    <!--    android:voiceLanguage="string"-->
+    <!--    android:voiceMaxResults="int"-->

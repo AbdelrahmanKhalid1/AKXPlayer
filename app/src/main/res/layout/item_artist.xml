@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="artist"
             type="com.example.akxplayer.model.Artist" />
@@ -13,30 +15,26 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:clickable="true"
-        android:gravity="start"
         android:focusable="true"
-        android:orientation="horizontal"
-        android:padding="12dp">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/image_artist"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/ic_person"
-            app:civ_border_width="2dp"
-            app:civ_border_color="#07000000"/>
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text_artist_name"
-            android:layout_width="0dp"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
             android:ellipsize="end"
-            android:textColor="@color/textColor"
-            android:lines="2"
+            android:maxLines="2"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
             android:text="@{artist.name}"
-            android:textSize="16sp" />
+            android:textColor="@color/textColor"
+            android:textSize="16sp"
+            tools:text="Martin Garrix" />
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:cardBackgroundColor="@color/splitter"
+            app:cardElevation="0dp" />
     </LinearLayout>
 </layout>

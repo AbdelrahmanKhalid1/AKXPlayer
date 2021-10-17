@@ -13,7 +13,6 @@ data class Playlist(
     val name: String,
     val songCount: Int
 ):Parcelable {
-    fun getSongCount():String = if(songCount == 1) "1 Song" else "$songCount Songs"
 
     companion object {
         fun fetchFromCursor(cursor: Cursor, songCount: Int): Playlist = Playlist(
