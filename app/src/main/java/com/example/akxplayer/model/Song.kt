@@ -2,7 +2,6 @@ package com.example.akxplayer.model
 
 import android.content.ContentResolver
 import android.database.Cursor
-import android.os.Bundle
 import android.os.Parcelable
 import android.provider.MediaStore.Audio.Media.ALBUM
 import android.provider.MediaStore.Audio.Media.ALBUM_ID
@@ -12,7 +11,6 @@ import android.provider.MediaStore.Audio.Media.DURATION
 import android.provider.MediaStore.Audio.Media.TITLE
 import android.provider.MediaStore.Audio.Media._ID
 import android.provider.MediaStore.Audio.Playlists.Members.AUDIO_ID
-import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import com.example.akxplayer.util.Util
 import kotlinx.android.parcel.Parcelize
@@ -28,12 +26,12 @@ data class Song(
     var artist: String = ""
 ) : Parcelable {
 
-    fun fetchDuration():String{
+    fun fetchDuration(): String {
         var fetchedDuration = ""
         var durationInt = duration.toInt() / 1000 // convert from milli to sec
         for (i in 0..1) {
             val numOf = durationInt / 60
-            if (numOf == 0) //has no min or hour or both
+            if (numOf == 0) // has no min or hour or both
                 break
 
             val time = durationInt % (numOf * 60)
@@ -61,7 +59,7 @@ data class Song(
             )
         }
 
-        fun fetchFromPlaylistCursor(cursor: Cursor):Song{
+        fun fetchFromPlaylistCursor(cursor: Cursor): Song {
             return Song(
                 cursor.getLong(cursor.getColumnIndex(AUDIO_ID)),
                 cursor.getString(cursor.getColumnIndex(TITLE)),
@@ -83,5 +81,3 @@ data class Song(
         }
     }
 }
-
-

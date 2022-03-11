@@ -34,8 +34,6 @@ import com.example.akxplayer.ui.activities.MainActivity
 import com.example.akxplayer.ui.listeners.OnMediaControlsChange
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.FileNotFoundException
 import java.lang.Exception
@@ -44,8 +42,8 @@ import kotlin.random.Random
 private const val TAG = "MediaPlayerService"
 private const val capabilities: Long =
     PlaybackStateCompat.ACTION_PLAY or PlaybackStateCompat.ACTION_PAUSE or
-            PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-            PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_SEEK_TO
+        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+        PlaybackStateCompat.ACTION_STOP or PlaybackStateCompat.ACTION_SEEK_TO
 
 class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
 
@@ -67,7 +65,7 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
     var isConnected = false
     private lateinit var noisyReceiver: NoisyReceiver
     private var requestAudioResult = -1
-    private lateinit var seeker : Completable
+    private lateinit var seeker: Completable
 
     override fun onCreate() {
         super.onCreate()
@@ -260,7 +258,6 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         setMediaPlaybackStateWithActions(PlaybackStateCompat.STATE_PLAYING, 1.0f)
         mediaControls.onPlayerStateChanged(PlayingState.PLAYING)
 
-
         isFavorite(songList[currentQueueIndex].id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -289,7 +286,7 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
             mediaControls.onPlayerStateChanged(PlayingState.PAUSED)
             prepareMediaPlayer(songList[queue[currentQueueIndex]])
             play()
-        } catch (ignore: IndexOutOfBoundsException) {//end of queue
+        } catch (ignore: IndexOutOfBoundsException) { // end of queue
             Log.d(TAG, "playNextSong: ")
             mediaControls.onPlayerStateChanged(PlayingState.PLAYING)
             setMediaPlaybackStateWithActions(PlaybackStateCompat.STATE_PLAYING, 1.0f)
@@ -524,7 +521,7 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         var deletedPosition: Int = -1
         for (index in queue.indices) {
             if (songList[queue[index]].id == deletedSongId) {
-                deletedPosition = queue[index] //real position of song in songList
+                deletedPosition = queue[index] // real position of song in songList
                 break
             }
         }
@@ -543,7 +540,6 @@ class MediaPlayerService : Service(), AudioManager.OnAudioFocusChangeListener {
         }
         songList = newSongList
         queue = newQueue
-
     }
 
     fun addToQueue(song: Song) {

@@ -1,16 +1,11 @@
 package com.example.akxplayer.db.dao
 
-import android.text.BoringLayout
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.akxplayer.constants.RepeatMode
 import com.example.akxplayer.db.entity.QueueEntity
-import com.example.akxplayer.db.entity.SongEntity
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
 
 @Dao
 interface QueueDao {

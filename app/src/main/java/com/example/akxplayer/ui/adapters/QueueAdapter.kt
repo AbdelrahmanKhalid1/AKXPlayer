@@ -1,7 +1,5 @@
 package com.example.akxplayer.ui.adapters
 
-import android.graphics.Color
-import com.example.akxplayer.R
 import com.example.akxplayer.model.Song
 import com.example.akxplayer.ui.listeners.OnItemClickListener
 

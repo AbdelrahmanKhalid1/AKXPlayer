@@ -11,20 +11,13 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.akxplayer.R
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleObserver
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.FileNotFoundException
 
 class Util {
     companion object {
         fun fetchDuration(duration: Int): String {
             var fetchedDuration = ""
             var unit = duration / 1000 // convert from milli to sec
-            if(unit == 0)
+            if (unit == 0)
                 return "0:00"
             while (unit > 0) {
                 val time = unit % 60
@@ -39,7 +32,7 @@ class Util {
         }
 
         fun getPic(albumId: Long, contentResolver: ContentResolver): Bitmap? {
-            val uriAlbumArt = Uri.parse("content://media/external/audio/albumart");
+            val uriAlbumArt = Uri.parse("content://media/external/audio/albumart")
             val uriCurrentAlbum = ContentUris.withAppendedId(uriAlbumArt, albumId)
             try {
                 val pfd = contentResolver.openFileDescriptor(uriCurrentAlbum, "r")
@@ -52,7 +45,6 @@ class Util {
                     )
                 }
             } catch (ignore: Exception) {
-
             }
             return null
         }
@@ -60,8 +52,8 @@ class Util {
         @BindingAdapter("albumId", "error", requireAll = true)
         @JvmStatic
         fun setImage(imageView: ImageView, albumId: Long?, error: Drawable?) {
-            if(albumId == null || error == null) return
-            val uriAlbumArt = Uri.parse("content://media/external/audio/albumart");
+            if (albumId == null || error == null) return
+            val uriAlbumArt = Uri.parse("content://media/external/audio/albumart")
             val uriCurrentAlbum = ContentUris.withAppendedId(uriAlbumArt, albumId)
             Glide.with(imageView)
                 .load(uriCurrentAlbum)

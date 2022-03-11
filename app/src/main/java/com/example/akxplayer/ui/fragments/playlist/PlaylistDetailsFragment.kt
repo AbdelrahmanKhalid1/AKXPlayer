@@ -12,7 +12,7 @@ import com.example.akxplayer.ui.fragments.song.SongFragment
 
 private const val PLAYLIST = "genre"
 
-class PlaylistDetailsFragment:Fragment() {
+class PlaylistDetailsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistDetailsBinding? = null
     private val binding get() = _binding!!
@@ -41,7 +41,7 @@ class PlaylistDetailsFragment:Fragment() {
         super.onActivityCreated(savedInstanceState)
         parentFragmentManager.beginTransaction().replace(
             R.id.container_song,
-            SongFragment.newInstance(-1,-1,-1, playlist.id, playlist.name),
+            SongFragment.newInstance(-1, -1, -1, playlist.id, playlist.name),
             null
         ).commit()
     }

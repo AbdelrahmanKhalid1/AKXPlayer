@@ -1,10 +1,8 @@
 package com.example.akxplayer.ui.listeners
 
-interface PopupMenuListener {
+interface PopupMenuListener
 
-}
-
-interface PopupMenuSongListener : PopupMenuListener{
+interface PopupMenuSongListener : PopupMenuListener {
     fun addToQueue(songId: Long)
 
     fun addToPlaylist(songId: Long)
@@ -18,7 +16,7 @@ interface PopupMenuSongListener : PopupMenuListener{
     fun removeFromPlaylist(songId: Long, playlistId: Long)
 }
 
-interface PopupMenuPlaylistListener: PopupMenuListener {
+interface PopupMenuPlaylistListener : PopupMenuListener {
 
     fun rename(playlistId: Long)
 

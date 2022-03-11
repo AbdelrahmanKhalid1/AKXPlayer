@@ -78,7 +78,7 @@ class AKX : MultiDexApplication() {
                 androidx.media.app.NotificationCompat.MediaStyle()
                     .setMediaSession(mediaSessionCompat.sessionToken)
                     .setShowActionsInCompactView(1, 2, 3)
-                    .setShowCancelButton(true) //for api < lollipop
+                    .setShowCancelButton(true) // for api < lollipop
                     .setCancelButtonIntent(getActionIntent(context, KeyEvent.KEYCODE_MEDIA_STOP))
             )
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -105,6 +105,6 @@ class AKX : MultiDexApplication() {
             if (isFavorite) R.drawable.ic_favorite else R.drawable.ic_not_favorite
 
         private fun getPlayingIcon(isPlaying: Boolean) =
-            if(isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow
+            if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow
     }
 }

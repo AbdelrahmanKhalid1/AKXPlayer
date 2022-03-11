@@ -22,5 +22,4 @@ interface FavoriteDao {
 
     @Query("SELECT COUNT(song_id) FROM favorite")
     fun getNumOfFavoriteSongs(): Int
-
 }

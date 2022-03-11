@@ -10,7 +10,6 @@ import com.example.akxplayer.repository.GenreRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-
 class GenreViewModel : ViewModel() {
 
     private val genreMutableLiveData = MutableLiveData<List<Genre>>()
@@ -23,9 +22,9 @@ class GenreViewModel : ViewModel() {
     fun getGenre(): LiveData<List<Genre>> = genreMutableLiveData
 
     fun loadGenres() {
-            GenreRepository.loadGenre(contentResolver).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { genres -> genreMutableLiveData.value = genres }
+        GenreRepository.loadGenre(contentResolver).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { genres -> genreMutableLiveData.value = genres }
     }
 
     fun loadGenreSongs(genreId: Long): LiveData<List<Song>> {

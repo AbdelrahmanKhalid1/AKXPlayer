@@ -1,9 +1,9 @@
 package com.example.akxplayer.repository
 
 import android.content.ContentResolver
-import android.provider.MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
-import android.provider.MediaStore.Audio.Albums.DEFAULT_SORT_ORDER
 import android.provider.MediaStore.Audio.Albums.ARTIST_ID
+import android.provider.MediaStore.Audio.Albums.DEFAULT_SORT_ORDER
+import android.provider.MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
 import android.util.Log
 import com.example.akxplayer.model.Album
 import io.reactivex.rxjava3.core.Single
@@ -14,7 +14,7 @@ object AlbumRepository {
 
     fun loadAlbums(artistId: Long, contentResolver: ContentResolver): Single<List<Album>> =
         Single.create { emitter ->
-            val selection = if(artistId.compareTo(-1) == 0) null else "($ARTIST_ID = $artistId)"
+            val selection = if (artistId.compareTo(-1) == 0) null else "($ARTIST_ID = $artistId)"
             val cursor = contentResolver.query(
                 EXTERNAL_CONTENT_URI,
                 null,

@@ -14,14 +14,17 @@ import com.example.akxplayer.databinding.FragmentPlaylistBinding
 import com.example.akxplayer.model.Playlist
 import com.example.akxplayer.ui.adapters.PlaylistAdapter
 import com.example.akxplayer.ui.dialogs.CreatePlaylistDialog
-import com.example.akxplayer.ui.dialogs.delete.DeletePlaylistDialog
 import com.example.akxplayer.ui.dialogs.RenameDialog
+import com.example.akxplayer.ui.dialogs.delete.DeletePlaylistDialog
 import com.example.akxplayer.ui.listeners.OnDialogClickListener
 import com.example.akxplayer.ui.listeners.OnItemClickListener
 import com.example.akxplayer.ui.listeners.PopupMenuPlaylistListener
 import com.example.akxplayer.ui.viewmodels.PlaylistViewModel
 
-class PlaylistFragment : Fragment(), OnItemClickListener, OnDialogClickListener,
+class PlaylistFragment :
+    Fragment(),
+    OnItemClickListener,
+    OnDialogClickListener,
     PopupMenuPlaylistListener {
 
     private lateinit var playlistViewModel: PlaylistViewModel
@@ -57,11 +60,14 @@ class PlaylistFragment : Fragment(), OnItemClickListener, OnDialogClickListener,
         buildRecycler()
         playlistViewModel.loadPlaylist(requireContext())
 
-        playlistViewModel.getPlaylists().observe(viewLifecycleOwner, Observer { playlists ->
-            items = playlists
-            playlistAdapter.playlists = playlists
-            playlistAdapter.notifyDataSetChanged()
-        })
+        playlistViewModel.getPlaylists().observe(
+            viewLifecycleOwner,
+            Observer { playlists ->
+                items = playlists
+                playlistAdapter.playlists = playlists
+                playlistAdapter.notifyDataSetChanged()
+            }
+        )
     }
 
     private fun buildRecycler() {

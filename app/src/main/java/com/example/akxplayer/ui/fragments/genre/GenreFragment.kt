@@ -5,9 +5,9 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.akxplayer.R
-import com.example.akxplayer.ui.fragments.base.BaseFragment
 import com.example.akxplayer.model.Genre
 import com.example.akxplayer.ui.adapters.GenreAdapter
+import com.example.akxplayer.ui.fragments.base.BaseFragment
 import com.example.akxplayer.ui.viewmodels.GenreViewModel
 
 class GenreFragment : BaseFragment<Genre, GenreAdapter.GenreViewHolder>() {
@@ -23,13 +23,16 @@ class GenreFragment : BaseFragment<Genre, GenreAdapter.GenreViewHolder>() {
 
         adapter = GenreAdapter(this)
         buildRecycler(LinearLayoutManager(context!!), adapter)
-        genreViewModel.getGenre().observe(viewLifecycleOwner, androidx.lifecycle.Observer { genres ->
-            items = genres
-            adapter.setGenre(genres)
-        })
+        genreViewModel.getGenre().observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer { genres ->
+                items = genres
+                adapter.setGenre(genres)
+            }
+        )
     }
 
-    override fun onItemClick(position: Int, view:View) {
+    override fun onItemClick(position: Int, view: View) {
         activity!!.supportFragmentManager.beginTransaction()
             .add(
                 R.id.container_main,

@@ -1,15 +1,15 @@
 package com.example.akxplayer.util
 //
-//import android.content.Intent
-//import android.media.AudioManager
-//import android.media.session.MediaSession
-//import android.support.v4.media.session.MediaSessionCompat
-//import android.support.v4.media.session.PlaybackStateCompat
-//import android.view.KeyEvent
-//import com.example.akxplayer.constants.PlayingState
-//import com.example.akxplayer.notification.AKX
+// import android.content.Intent
+// import android.media.AudioManager
+// import android.media.session.MediaSession
+// import android.support.v4.media.session.MediaSessionCompat
+// import android.support.v4.media.session.PlaybackStateCompat
+// import android.view.KeyEvent
+// import com.example.akxplayer.constants.PlayingState
+// import com.example.akxplayer.notification.AKX
 //
-//class MediaServiceHelper : MediaSessionCompat.Callback() {
+// class MediaServiceHelper : MediaSessionCompat.Callback() {
 //    override fun onPause() {
 //        pause()
 //    }
@@ -63,4 +63,4 @@ package com.example.akxplayer.util
 //        mediaControls.onSeekPositionChange(position)
 //    }
 //
-//}
+// }

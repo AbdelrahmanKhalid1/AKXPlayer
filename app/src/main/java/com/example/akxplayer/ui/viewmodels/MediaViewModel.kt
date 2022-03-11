@@ -14,7 +14,6 @@ import com.example.akxplayer.db.entity.QueueEntity
 import com.example.akxplayer.model.Song
 import com.example.akxplayer.repository.*
 import com.example.akxplayer.services.MediaPlayerService
-import com.example.akxplayer.ui.activities.MainActivity
 import com.example.akxplayer.ui.listeners.OnMediaControlsChange
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
@@ -25,7 +24,9 @@ import java.util.ArrayList
 
 private const val TAG = "MediaViewModel"
 
-class MediaViewModel(application: Application) : AndroidViewModel(application), ServiceConnection,
+class MediaViewModel(application: Application) :
+    AndroidViewModel(application),
+    ServiceConnection,
     OnMediaControlsChange {
 
     private lateinit var playerService: MediaPlayerService
@@ -145,31 +146,30 @@ class MediaViewModel(application: Application) : AndroidViewModel(application), 
 
     private fun fetchQueueDataFromDB() {
         QueueRepository.loadQueue().subscribeOn(Schedulers.io()).subscribe(object :
-            SingleObserver<QueueEntity> {
-            override fun onSubscribe(d: Disposable?) {
-            }
-
-            override fun onSuccess(queueEntity: QueueEntity) {
-                var songList = emptyList<Song>()
-                var queue = emptyList<Int>()
-                val songIds = SongRepository.getSongIds()
-                if (songIds != null) {
-                    songList = SongRepository.getSongsForIds(songIds)
-                    queue = SongRepository.getSongOrder()
+                SingleObserver<QueueEntity> {
+                override fun onSubscribe(d: Disposable?) {
                 }
-                playerService.initControls(queueEntity, songList, queue)
-                initControls(queueEntity)
-                title.postValue(queueEntity.title)
-            }
 
-            override fun onError(e: Throwable?) {//called first time when Queue table is empty
-                val queueEntity = QueueEntity()
-                playerService.initControls(queueEntity, emptyList(), emptyList())
-                initControls(queueEntity)
-                QueueRepository.initializeQueue()
-            }
-        })
+                override fun onSuccess(queueEntity: QueueEntity) {
+                    var songList = emptyList<Song>()
+                    var queue = emptyList<Int>()
+                    val songIds = SongRepository.getSongIds()
+                    if (songIds != null) {
+                        songList = SongRepository.getSongsForIds(songIds)
+                        queue = SongRepository.getSongOrder()
+                    }
+                    playerService.initControls(queueEntity, songList, queue)
+                    initControls(queueEntity)
+                    title.postValue(queueEntity.title)
+                }
 
+                override fun onError(e: Throwable?) { // called first time when Queue table is empty
+                    val queueEntity = QueueEntity()
+                    playerService.initControls(queueEntity, emptyList(), emptyList())
+                    initControls(queueEntity)
+                    QueueRepository.initializeQueue()
+                }
+            })
     }
 
     private fun initControls(queueEntity: QueueEntity) {
