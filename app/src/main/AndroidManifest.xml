@@ -18,7 +18,8 @@
             android:name=".ui.activities.LauncherActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashScreen">
+            android:theme="@style/SplashScreen"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +28,8 @@
 
         <activity
             android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -40,7 +42,8 @@
             android:name=".ui.activities.SettingsActivity"
             android:parentActivityName=".ui.activities.MainActivity" />
 
-        <receiver android:name="androidx.media.session.MediaButtonReceiver"> <!-- Receiver for bluetooth and headphones controls -->
+        <receiver android:name="androidx.media.session.MediaButtonReceiver"
+            android:exported="false"> <!-- Receiver for bluetooth and headphones controls -->
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
