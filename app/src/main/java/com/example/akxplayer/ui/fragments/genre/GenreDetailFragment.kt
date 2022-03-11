@@ -10,7 +10,6 @@ import com.example.akxplayer.databinding.FragmentGenreDetailBinding
 import com.example.akxplayer.model.Genre
 import com.example.akxplayer.ui.fragments.song.SongFragment
 
-
 private const val GENRE = "genre"
 
 class GenreDetailFragment : Fragment() {

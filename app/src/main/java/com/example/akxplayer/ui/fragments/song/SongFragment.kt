@@ -31,7 +31,9 @@ private const val GENRE = "GENRE ID"
 private const val PLAYLIST = "PLAYLIST ID"
 private const val NAME = "NAME"
 
-class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenuSongListener,
+class SongFragment :
+    BaseFragment<Song, SongAdapter.SongViewHolder>(),
+    PopupMenuSongListener,
     OnAlbumPlayButtonClick {
 
     private lateinit var songViewModel: SongViewModel
@@ -62,11 +64,14 @@ class SongFragment : BaseFragment<Song, SongAdapter.SongViewHolder>(), PopupMenu
         songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
         songViewModel.init(context!!.contentResolver, albumId, artistId, genreId, playlistId)
         songViewModel.loadSongs(requireContext())
-        songViewModel.getSongs().observe(viewLifecycleOwner, Observer { songs ->
-            items = songs
-            adapter.songs = songs
-            adapter.notifyDataSetChanged()
-        })
+        songViewModel.getSongs().observe(
+            viewLifecycleOwner,
+            Observer { songs ->
+                items = songs
+                adapter.songs = songs
+                adapter.notifyDataSetChanged()
+            }
+        )
     }
 
     override fun onItemClick(position: Int, view: View) {

@@ -3,8 +3,6 @@ package com.example.akxplayer.ui.dialogs
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.view.View
-import android.webkit.WebView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import com.example.akxplayer.R

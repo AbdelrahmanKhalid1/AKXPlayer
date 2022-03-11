@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.akxplayer.R
-import com.example.akxplayer.ui.fragments.base.BaseFragment
 import com.example.akxplayer.model.Album
 import com.example.akxplayer.ui.adapters.AlbumAdapter
+import com.example.akxplayer.ui.fragments.base.BaseFragment
 import com.example.akxplayer.ui.viewmodels.AlbumViewModel
 
 private const val ARTIST_ID = "artistId"
@@ -46,11 +46,14 @@ class AlbumFragment : BaseFragment<Album, RecyclerView.ViewHolder>() {
 
         albumViewModel = ViewModelProvider(this)[AlbumViewModel::class.java]
         albumViewModel.init(context!!.contentResolver, artistId)
-        albumViewModel.getAlbums().observe(viewLifecycleOwner, Observer { albums ->
-        Log.d("text theme change", "onActivityCreated: ${albums.size}")
-            items = albums
-            adapter.setAlbums(albums)
-        })
+        albumViewModel.getAlbums().observe(
+            viewLifecycleOwner,
+            Observer { albums ->
+                Log.d("text theme change", "onActivityCreated: ${albums.size}")
+                items = albums
+                adapter.setAlbums(albums)
+            }
+        )
         albumViewModel.loadAlbums()
     }
 
@@ -86,4 +89,3 @@ class AlbumFragment : BaseFragment<Album, RecyclerView.ViewHolder>() {
         }
     }
 }
-

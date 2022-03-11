@@ -2,10 +2,10 @@ package com.example.akxplayer.ui.adapters
 
 import android.view.*
 import androidx.recyclerview.widget.RecyclerView
-import com.example.akxplayer.ui.listeners.OnItemClickListener
 import com.example.akxplayer.R
 import com.example.akxplayer.databinding.ItemSongBinding
 import com.example.akxplayer.model.Song
+import com.example.akxplayer.ui.listeners.OnItemClickListener
 import com.example.akxplayer.ui.listeners.PopupMenuListener
 
 open class SongAdapter(
@@ -51,9 +51,8 @@ open class SongAdapter(
             if (menuListener != null) {
                 binding.btnSongOption.setMenu(menuListener, R.menu.menu_song)
                 binding.btnSongOption.playlistId = playlistId
-            }else
+            } else
                 binding.btnSongOption.visibility = View.GONE
-
         }
 
         fun bind(song: Song) {

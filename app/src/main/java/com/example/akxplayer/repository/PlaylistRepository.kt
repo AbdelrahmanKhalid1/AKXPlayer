@@ -3,13 +3,12 @@ package com.example.akxplayer.repository
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.net.Uri
-import android.provider.MediaStore.Audio.Playlists._ID
-import android.provider.MediaStore.Audio.Playlists.NAME
-import android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
-import android.provider.MediaStore.Audio.Playlists.Members.PLAY_ORDER
-import android.provider.MediaStore.Audio.Playlists.Members.AUDIO_ID
 import android.provider.MediaStore
-import android.util.Log
+import android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
+import android.provider.MediaStore.Audio.Playlists.Members.AUDIO_ID
+import android.provider.MediaStore.Audio.Playlists.Members.PLAY_ORDER
+import android.provider.MediaStore.Audio.Playlists.NAME
+import android.provider.MediaStore.Audio.Playlists._ID
 import com.example.akxplayer.model.Playlist
 import com.example.akxplayer.model.Song
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -33,7 +32,8 @@ object PlaylistRepository {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     val playlist = Playlist.fetchFromCursor(
-                        cursor, getPlaylistSongCount(
+                        cursor,
+                        getPlaylistSongCount(
                             cursor.getLong(cursor.getColumnIndex(_ID)),
                             contentResolver
                         )
@@ -83,7 +83,6 @@ object PlaylistRepository {
         val param = "$_ID=$playlistId"
         contentResolver.delete(EXTERNAL_CONTENT_URI, param, null)
     }
-
 
     fun renamePlaylist(
         playlistId: Long,
@@ -153,7 +152,7 @@ object PlaylistRepository {
         if (isExistInPlaylist(songId, contentResolver, uri)) {
             emitter.onError(null)
         } else {
-            val projection = arrayOf("MAX(${PLAY_ORDER})")
+            val projection = arrayOf("MAX($PLAY_ORDER)")
             contentResolver.query(uri, projection, null, null, null)?.use {
                 val playOrder = if (it.moveToFirst()) it.getInt(0) + 1 else 0
                 val values = ContentValues().apply {

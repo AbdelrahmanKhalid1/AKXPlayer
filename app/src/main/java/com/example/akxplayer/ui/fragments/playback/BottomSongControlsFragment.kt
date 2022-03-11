@@ -1,7 +1,6 @@
 package com.example.akxplayer.ui.fragments.playback
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,15 +36,21 @@ class BottomSongControlsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         mediaViewModel = ViewModelProvider(requireActivity()).get(MediaViewModel::class.java)
         binding.viewModel = mediaViewModel
-        mediaViewModel.rootSong.observe(viewLifecycleOwner, Observer { songPosition ->
-            if (songPosition != -1)
+        mediaViewModel.rootSong.observe(
+            viewLifecycleOwner,
+            Observer { songPosition ->
+                if (songPosition != -1)
                     binding.song = mediaViewModel.getCurrentSong()
-        })
-        mediaViewModel.isPlaying.observe(viewLifecycleOwner, Observer { isPlaying ->
-            if (isPlaying)
-                binding.btnPlay.setImageResource(R.drawable.ic_pause)
-            else
-                binding.btnPlay.setImageResource(R.drawable.ic_play_arrow)
-        })
+            }
+        )
+        mediaViewModel.isPlaying.observe(
+            viewLifecycleOwner,
+            Observer { isPlaying ->
+                if (isPlaying)
+                    binding.btnPlay.setImageResource(R.drawable.ic_pause)
+                else
+                    binding.btnPlay.setImageResource(R.drawable.ic_play_arrow)
+            }
+        )
     }
 }

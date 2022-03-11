@@ -3,7 +3,7 @@ package com.example.akxplayer.db.entity
 import androidx.room.*
 
 @Entity(tableName = "song")
-data class SongEntity (
+data class SongEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "song_id")
     var songId: Long,

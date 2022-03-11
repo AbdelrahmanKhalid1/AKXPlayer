@@ -1,34 +1,34 @@
 package com.example.akxplayer.util
 //
-//import android.content.ContentResolver
-//import android.content.ContentUris
-//import android.content.Context
-//import android.content.Intent
-//import android.media.AudioAttributes
-//import android.media.AudioFocusRequest
-//import android.media.AudioManager
-//import android.media.MediaPlayer
-//import android.os.Build
-//import android.provider.MediaStore
-//import android.support.v4.media.session.MediaSessionCompat
-//import android.support.v4.media.session.PlaybackStateCompat
-//import android.util.Log
-//import android.view.KeyEvent
-//import com.example.akxplayer.R
-//import com.example.akxplayer.constants.PlayingState
-//import com.example.akxplayer.constants.RepeatMode
-//import com.example.akxplayer.constants.ShuffleMode
-//import com.example.akxplayer.model.Song
-//import com.example.akxplayer.notification.AKX
-//import io.reactivex.rxjava3.core.Single
-//import io.reactivex.rxjava3.schedulers.Schedulers
-//import java.io.FileNotFoundException
+// import android.content.ContentResolver
+// import android.content.ContentUris
+// import android.content.Context
+// import android.content.Intent
+// import android.media.AudioAttributes
+// import android.media.AudioFocusRequest
+// import android.media.AudioManager
+// import android.media.MediaPlayer
+// import android.os.Build
+// import android.provider.MediaStore
+// import android.support.v4.media.session.MediaSessionCompat
+// import android.support.v4.media.session.PlaybackStateCompat
+// import android.util.Log
+// import android.view.KeyEvent
+// import com.example.akxplayer.R
+// import com.example.akxplayer.constants.PlayingState
+// import com.example.akxplayer.constants.RepeatMode
+// import com.example.akxplayer.constants.ShuffleMode
+// import com.example.akxplayer.model.Song
+// import com.example.akxplayer.notification.AKX
+// import io.reactivex.rxjava3.core.Single
+// import io.reactivex.rxjava3.schedulers.Schedulers
+// import java.io.FileNotFoundException
 //
-//private const val TAG = "MediaSession"
+// private const val TAG = "MediaSession"
 //
-//class AkxMediaPlayer(context: Context): MediaSessionCompat.Callback() {
+// class AkxMediaPlayer(context: Context): MediaSessionCompat.Callback() {
 //
-////    private lateinit var onControlsChange: OnMediaControlsChange
+// //    private lateinit var onControlsChange: OnMediaControlsChange
 //    private lateinit var mediaPlayer: MediaPlayer
 //    private val contentResolver: ContentResolver
 //    var songList = emptyList<Song>()
@@ -40,10 +40,10 @@ package com.example.akxplayer.util
 //    private lateinit var player: MediaPlayer
 //    private lateinit var audioManager: AudioManager
 //    private lateinit var audioFocusRequest: AudioFocusRequest
-////    private var repeatMode = RepeatMode.REPEAT_OFF
-////    private var songList = emptyList<Song>()
-////    private var queue = emptyList<Int>()
-////    private var currentPosition = -1
+// //    private var repeatMode = RepeatMode.REPEAT_OFF
+// //    private var songList = emptyList<Song>()
+// //    private var queue = emptyList<Int>()
+// //    private var currentPosition = -1
 //    init {
 //        contentResolver = context.contentResolver
 //        mediaSession = MediaSessionCompat(context, TAG)
@@ -119,7 +119,7 @@ package com.example.akxplayer.util
 //            return
 //        }
 //        currentPosition = position
-////        setMediaPlayer()
+// //        setMediaPlayer()
 //    }
 //
 //    fun isPlaying(): Boolean = mediaPlayer.isPlaying
@@ -133,27 +133,27 @@ package com.example.akxplayer.util
 //        Single.create<Int> {
 //            while (mediaPlayer.isPlaying) {
 //                try {
-////                    onControlsChange.onSeekPositionChange(mediaPlayer.currentPosition)
+// //                    onControlsChange.onSeekPositionChange(mediaPlayer.currentPosition)
 //                } catch (ignore: InterruptedException) {
 //                }
 //            }
 //        }.subscribeOn(Schedulers.computation()).subscribe()
 //    }
 //
-////    fun getPreviousSong(): Song = try {
-////        songList[queue[getPreviousIndex()]]
-////    } catch (ignore: java.lang.IndexOutOfBoundsException) {
-////        Song()
-////    }
+// //    fun getPreviousSong(): Song = try {
+// //        songList[queue[getPreviousIndex()]]
+// //    } catch (ignore: java.lang.IndexOutOfBoundsException) {
+// //        Song()
+// //    }
 //
 //    private fun requestAudioFocus() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //        audioManager.requestAudioFocus(audioFocusRequest)
 //    } else {
-////        audioManager.requestAudioFocus(
-////            this,
-////            AudioManager.STREAM_MUSIC,
-////            AudioManager.AUDIOFOCUS_GAIN
-////        )
+// //        audioManager.requestAudioFocus(
+// //            this,
+// //            AudioManager.STREAM_MUSIC,
+// //            AudioManager.AUDIOFOCUS_GAIN
+// //        )
 //    }
 //
 //    private fun stop() {
@@ -247,7 +247,7 @@ package com.example.akxplayer.util
 //            1,
 //            AKX.createNotification(baseContext, mediaSession, R.drawable.ic_pause, repeatMode)
 //        )
-////        stopForeground(false)
+// //        stopForeground(false)
 //    }
 //
 //    private fun addToFavorite() {
@@ -261,4 +261,4 @@ package com.example.akxplayer.util
 //    } catch (ignore: IndexOutOfBoundsException) {
 //        Song()
 //    }
-//}
+// }

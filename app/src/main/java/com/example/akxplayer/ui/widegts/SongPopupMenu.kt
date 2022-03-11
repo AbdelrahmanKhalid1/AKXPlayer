@@ -6,8 +6,8 @@ import android.view.ContextThemeWrapper
 import android.widget.PopupMenu
 import androidx.appcompat.widget.AppCompatImageView
 import com.example.akxplayer.R
-import com.example.akxplayer.ui.listeners.PopupMenuPlaylistListener
 import com.example.akxplayer.ui.listeners.PopupMenuListener
+import com.example.akxplayer.ui.listeners.PopupMenuPlaylistListener
 import com.example.akxplayer.ui.listeners.PopupMenuSongListener
 
 class SongPopupMenu(context: Context, attrs: AttributeSet) : AppCompatImageView(context, attrs) {
@@ -56,11 +56,11 @@ class SongPopupMenu(context: Context, attrs: AttributeSet) : AppCompatImageView(
                 (menuListener as PopupMenuPlaylistListener).rename(songId)
                 true
             }
-            R.id.action_delete_playlist->{
+            R.id.action_delete_playlist -> {
                 (menuListener as PopupMenuPlaylistListener).deletePlaylist(songId)
                 true
             }
-            R.id.action_remove_from_playlist ->{
+            R.id.action_remove_from_playlist -> {
                 (menuListener as PopupMenuSongListener).removeFromPlaylist(songId, playlistId)
                 true
             }
@@ -68,7 +68,7 @@ class SongPopupMenu(context: Context, attrs: AttributeSet) : AppCompatImageView(
         }
     }
 
-    fun setMenu(menuListener: PopupMenuListener, menu: Int){
+    fun setMenu(menuListener: PopupMenuListener, menu: Int) {
         this.menuListener = menuListener
         popupMenu.inflate(menu)
     }

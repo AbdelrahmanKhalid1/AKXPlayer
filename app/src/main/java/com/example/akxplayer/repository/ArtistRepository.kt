@@ -32,7 +32,7 @@ object ArtistRepository {
         Log.d(TAG, "loadArtist: ${Thread.currentThread().name}")
     }
 
-    fun loadArtistSongs(artistId: Long,contentResolver: ContentResolver): Single<List<Song>> = Single.create { emitter ->
+    fun loadArtistSongs(artistId: Long, contentResolver: ContentResolver): Single<List<Song>> = Single.create { emitter ->
         val cursor = contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             null,
@@ -51,7 +51,7 @@ object ArtistRepository {
         emitter.onSuccess(songs)
     }
 
-    fun loadArtistAlbum(artistId: Long,contentResolver: ContentResolver): Single<List<Album>> = Single.create { emitter ->
+    fun loadArtistAlbum(artistId: Long, contentResolver: ContentResolver): Single<List<Album>> = Single.create { emitter ->
         val cursor = contentResolver.query(
             MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
             null,
@@ -70,7 +70,7 @@ object ArtistRepository {
         emitter.onSuccess(albums)
     }
 
-    fun loadArtistById(artistId: Long,contentResolver: ContentResolver): Single<Artist> = Single.create { emitter->
+    fun loadArtistById(artistId: Long, contentResolver: ContentResolver): Single<Artist> = Single.create { emitter ->
         val cursor = contentResolver.query(
             MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
             null,
@@ -79,7 +79,7 @@ object ArtistRepository {
             null
         )
 
-        if(cursor != null && cursor.moveToFirst()){
+        if (cursor != null && cursor.moveToFirst()) {
             emitter.onSuccess(Artist.fetchFromCursor(cursor))
         }
     }

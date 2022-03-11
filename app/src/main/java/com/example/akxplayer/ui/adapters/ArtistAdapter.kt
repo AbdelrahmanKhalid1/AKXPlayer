@@ -1,16 +1,15 @@
 package com.example.akxplayer.ui.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.akxplayer.databinding.ItemArtistBinding
-import com.example.akxplayer.ui.listeners.OnItemClickListener
 import com.example.akxplayer.model.Artist
+import com.example.akxplayer.ui.listeners.OnItemClickListener
 
 class ArtistAdapter(private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
 
-    private var artists : List<Artist> = ArrayList()
+    private var artists: List<Artist> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -28,7 +27,7 @@ class ArtistAdapter(private val onItemClickListener: OnItemClickListener) : Recy
         return artists.size
     }
 
-    fun setArtists(artists: List<Artist>){
+    fun setArtists(artists: List<Artist>) {
         this.artists = artists
         notifyDataSetChanged()
     }
@@ -36,8 +35,8 @@ class ArtistAdapter(private val onItemClickListener: OnItemClickListener) : Recy
     class ArtistViewHolder(private val binding: ItemArtistBinding, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.root.setOnClickListener{
-                if(adapterPosition != RecyclerView.NO_POSITION)
+            binding.root.setOnClickListener {
+                if (adapterPosition != RecyclerView.NO_POSITION)
                     onItemClickListener.onItemClick(adapterPosition, binding.root)
             }
         }

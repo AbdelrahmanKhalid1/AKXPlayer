@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import com.example.akxplayer.R
 import com.example.akxplayer.databinding.FragmentArtistDetailBinding
 import com.example.akxplayer.model.Artist
-import com.example.akxplayer.ui.fragments.song.SongFragment
 import com.example.akxplayer.ui.fragments.album.AlbumFragment
+import com.example.akxplayer.ui.fragments.song.SongFragment
 
 private const val ARTIST = "artist"
 

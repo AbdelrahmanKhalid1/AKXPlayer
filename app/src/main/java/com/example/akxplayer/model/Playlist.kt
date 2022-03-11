@@ -1,10 +1,9 @@
 package com.example.akxplayer.model
 
 import android.database.Cursor
-import android.os.Parcel
 import android.os.Parcelable
-import android.provider.MediaStore.Audio.Playlists._ID
 import android.provider.MediaStore.Audio.Playlists.NAME
+import android.provider.MediaStore.Audio.Playlists._ID
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -12,7 +11,7 @@ data class Playlist(
     val id: Long,
     val name: String,
     val songCount: Int
-):Parcelable {
+) : Parcelable {
 
     companion object {
         fun fetchFromCursor(cursor: Cursor, songCount: Int): Playlist = Playlist(

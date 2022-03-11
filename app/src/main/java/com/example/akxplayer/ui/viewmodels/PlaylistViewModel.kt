@@ -1,6 +1,5 @@
 package com.example.akxplayer.ui.viewmodels
 
-import android.content.ContentResolver
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -23,7 +22,7 @@ class PlaylistViewModel : ViewModel() {
                 val favoriteDao = AkxDatabase.getInstance(context).favoriteDao()
                 Log.d("testDatabase", "loadPlaylist: ${favoriteDao.getNumOfFavoriteSongs()}")
                 val favoriteCount = favoriteDao.getNumOfFavoriteSongs()
-                if(favoriteCount > 0)
+                if (favoriteCount > 0)
                     (playlists as ArrayList).add(0, Playlist(-2, "Favorites", favoriteCount))
                 playlistLiveData.postValue(playlists)
             }

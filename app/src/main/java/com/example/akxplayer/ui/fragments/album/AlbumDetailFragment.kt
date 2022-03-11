@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
@@ -21,10 +20,6 @@ import com.example.akxplayer.R
 import com.example.akxplayer.databinding.FragmentAlbumDetailBinding
 import com.example.akxplayer.model.Album
 import com.example.akxplayer.ui.fragments.song.SongFragment
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
-import com.google.android.material.appbar.CollapsingToolbarLayout
-
 
 private const val ALBUM = "album"
 private const val ARTIST_ID = "artist_id"
@@ -49,7 +44,7 @@ class AlbumDetailFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View{
+    ): View {
 
         _binding = FragmentAlbumDetailBinding.inflate(
             inflater,
@@ -96,7 +91,7 @@ class AlbumDetailFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == android.R.id.home){
+        if (item.itemId == android.R.id.home) {
             parentFragmentManager.popBackStack()
             return true
         }
@@ -104,7 +99,7 @@ class AlbumDetailFragment : Fragment() {
     }
 
     private fun loadImage() {
-        val uriAlbumArt = Uri.parse("content://media/external/audio/albumart");
+        val uriAlbumArt = Uri.parse("content://media/external/audio/albumart")
         val uriCurrentAlbum = ContentUris.withAppendedId(uriAlbumArt, album.id)
         Glide.with(binding.imageAlbumArt)
             .load(uriCurrentAlbum)

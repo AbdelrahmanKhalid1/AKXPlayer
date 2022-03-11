@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -31,7 +30,7 @@ class CreatePlaylistDialog(private val songId: Long, private val listener: OnDia
             setPositiveButton("create playlist") { _, _ ->
                 PlaylistRepository.createPlaylist(editText.text.toString(), context.contentResolver)
                     .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe (observer)
+                    .subscribe(observer)
             }
             setNegativeButton("cancel", null)
         }
@@ -43,7 +42,7 @@ class CreatePlaylistDialog(private val songId: Long, private val listener: OnDia
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        observer = object : SingleObserver<Long>{
+        observer = object : SingleObserver<Long> {
             override fun onSuccess(playlistId: Long) {
                 if (songId > -1) {
                     PlaylistRepository.addSongToPlaylist(songId, playlistId, context.contentResolver)

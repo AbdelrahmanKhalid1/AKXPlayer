@@ -4,10 +4,8 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Intent
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import com.example.akxplayer.R
@@ -40,9 +38,11 @@ class LauncherActivity : AppCompatActivity() {
             }
             it.onComplete()
         }.subscribeOn(Schedulers.single()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe { startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            counter = 1}
+            .subscribe {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+                counter = 1
+            }
 
         val objectAnimator = ObjectAnimator.ofPropertyValuesHolder(
             binding.imageLogo,

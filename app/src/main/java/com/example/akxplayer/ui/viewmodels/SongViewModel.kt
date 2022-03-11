@@ -2,7 +2,6 @@ package com.example.akxplayer.ui.viewmodels
 
 import android.content.ContentResolver
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,28 +44,27 @@ class SongViewModel : ViewModel() {
 
     fun loadSongs(context: Context) {
         when {
-            genreId.compareTo(-1) != 0 -> GenreRepository.getGenreSongs(genreId, contentResolver) //load genre members (songs for genre)
+            genreId.compareTo(-1) != 0 -> GenreRepository.getGenreSongs(genreId, contentResolver) // load genre members (songs for genre)
                 .subscribeOn(Schedulers.io())
                 .subscribe { songs -> songMutableLiveData.postValue(songs) }
 
-            playlistId.compareTo(-2) == 0 -> //load favorite songs
+            playlistId.compareTo(-2) == 0 -> // load favorite songs
                 Single.create<List<Song>> {
                     val songIds = AkxDatabase.getInstance(context).favoriteDao().getFavoriteSongs()
                     it.onSuccess(SongRepository.getSongsForIds(songIds))
                 }.subscribeOn(Schedulers.io())
                     .subscribe { songs -> songMutableLiveData.postValue(songs) }
 
-            playlistId.compareTo(-1) != 0 -> PlaylistRepository.getPlaylistSongs( //load songs from playlist
+            playlistId.compareTo(-1) != 0 -> PlaylistRepository.getPlaylistSongs( // load songs from playlist
                 playlistId,
                 contentResolver
             ).subscribeOn(Schedulers.io())
                 .subscribe { songs -> songMutableLiveData.postValue(songs) }
 
-            else -> //load songs from an album or artist or all songs
+            else -> // load songs from an album or artist or all songs
                 SongRepository.loadSongs(albumId, artistId)
                     .subscribeOn(Schedulers.io())
                     .subscribe { songs -> songMutableLiveData.postValue(songs) }
-
         }
     }
 

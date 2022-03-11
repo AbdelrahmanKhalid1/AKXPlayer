@@ -1,16 +1,13 @@
 package com.example.akxplayer.ui.fragments.artist
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.akxplayer.R
-import com.example.akxplayer.ui.fragments.base.BaseFragment
 import com.example.akxplayer.model.Artist
-import com.example.akxplayer.ui.activities.MainActivity
 import com.example.akxplayer.ui.adapters.ArtistAdapter
+import com.example.akxplayer.ui.fragments.base.BaseFragment
 import com.example.akxplayer.ui.viewmodels.ArtistViewModel
 
 private const val TAG = "ArtistFragment"
@@ -26,10 +23,13 @@ class ArtistFragment : BaseFragment<Artist, ArtistAdapter.ArtistViewHolder>() {
         adapter = ArtistAdapter(this)
         buildRecycler(LinearLayoutManager(requireContext()), adapter)
         artistViewModel.getArtist()
-            .observe(viewLifecycleOwner, androidx.lifecycle.Observer { artists ->
-                items = artists
-                adapter.setArtists(artists)
-            })
+            .observe(
+                viewLifecycleOwner,
+                androidx.lifecycle.Observer { artists ->
+                    items = artists
+                    adapter.setArtists(artists)
+                }
+            )
         artistViewModel.loadArtist()
     }
 

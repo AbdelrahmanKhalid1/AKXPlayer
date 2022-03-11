@@ -18,7 +18,6 @@ import com.example.akxplayer.databinding.FragmentMainBinding
 import com.example.akxplayer.ui.activities.SettingsActivity
 import com.example.akxplayer.ui.adapters.SectionsPagerAdapter
 import com.example.akxplayer.ui.dialogs.AboutDialog
-import com.google.android.material.tabs.TabLayoutMediator
 
 private const val TAG = "LibraryFragment"
 class LibraryFragment : Fragment() {
@@ -26,7 +25,8 @@ class LibraryFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(
@@ -40,7 +40,6 @@ class LibraryFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_main, menu)
 
@@ -53,7 +52,7 @@ class LibraryFragment : Fragment() {
 
         mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(s: String): Boolean {
-                return s.isEmpty() //if true will not submit
+                return s.isEmpty() // if true will not submit
             }
 
             override fun onQueryTextChange(s: String): Boolean {
@@ -68,9 +67,9 @@ class LibraryFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT).show()
-            R.id.action_setting-> startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+            R.id.action_setting -> startActivity(Intent(requireActivity(), SettingsActivity::class.java))
             R.id.action_about -> openDialogAbout()
             else ->
                 return false
@@ -78,7 +77,7 @@ class LibraryFragment : Fragment() {
         return true
     }
 
-    private fun openDialogAbout(){
+    private fun openDialogAbout() {
         val aboutDialog = AboutDialog()
         aboutDialog.show(parentFragmentManager, "About Dialog")
     }
@@ -103,10 +102,11 @@ class LibraryFragment : Fragment() {
     }
 
     private fun checkReadExternalStoragePermission(): Boolean = (
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED)
+        ActivityCompat.checkSelfPermission(
+            requireContext(),
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        ) != PackageManager.PERMISSION_GRANTED
+        )
 
     private fun setFragments() {
         Log.d(TAG, "setFragments: MainStart stack count = ${parentFragmentManager.backStackEntryCount}")

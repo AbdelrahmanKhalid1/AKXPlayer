@@ -5,12 +5,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.akxplayer.R
 import com.example.akxplayer.databinding.ItemGenreBinding
-import com.example.akxplayer.ui.listeners.OnItemClickListener
 import com.example.akxplayer.model.Genre
+import com.example.akxplayer.ui.listeners.OnItemClickListener
 
 class GenreAdapter(private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
 
-    private var genres : List<Genre> = ArrayList()
+    private var genres: List<Genre> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenreViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_genre, parent, false)
@@ -33,7 +33,7 @@ class GenreAdapter(private val onItemClickListener: OnItemClickListener) : Recyc
         notifyDataSetChanged()
     }
 
-    class GenreViewHolder(private val binding : ItemGenreBinding, private val listener: OnItemClickListener) :
+    class GenreViewHolder(private val binding: ItemGenreBinding, private val listener: OnItemClickListener) :
         RecyclerView.ViewHolder(binding.root) {
 
         init {

@@ -23,4 +23,4 @@ data class QueueEntity(
     var repeatMode: RepeatMode = RepeatMode.REPEAT_OFF,
     @ColumnInfo(name = "shuffle_mode")
     var shuffleEnabled: Boolean = false
-):Parcelable
+) : Parcelable
